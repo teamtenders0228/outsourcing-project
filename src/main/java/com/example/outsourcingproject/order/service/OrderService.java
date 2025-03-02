@@ -2,6 +2,7 @@ package com.example.outsourcingproject.order.service;
 
 import com.example.outsourcingproject.order.dto.request.OrderSaveRequestDto;
 import com.example.outsourcingproject.order.dto.response.OrderAcceptResponseDto;
+import com.example.outsourcingproject.order.dto.response.OrderRejectResponseDto;
 import com.example.outsourcingproject.order.entity.Order;
 import com.example.outsourcingproject.order.enums.Status;
 import com.example.outsourcingproject.order.repository.OrderRepository;
@@ -29,5 +30,16 @@ public class OrderService {
         findOrder.setAccepted(true);
 
         return new OrderAcceptResponseDto("주문을 수락하였습니다.");
+    }
+
+    // 취소(거절) - (가게사장님 만 가능)
+    @Transactional
+    public OrderRejectResponseDto orderReject(Long orderId) {
+        Order findOrder = orderRepository.findByIdOrElseThrow(orderId);
+
+        findOrder.setStatus(Status.REJECT);
+        findOrder.setAccepted(false);
+
+        return new OrderRejectResponseDto("주문을 거절하였습니다.");
     }
 }

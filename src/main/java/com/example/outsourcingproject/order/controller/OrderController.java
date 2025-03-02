@@ -2,6 +2,7 @@ package com.example.outsourcingproject.order.controller;
 
 import com.example.outsourcingproject.order.dto.request.OrderSaveRequestDto;
 import com.example.outsourcingproject.order.dto.response.OrderAcceptResponseDto;
+import com.example.outsourcingproject.order.dto.response.OrderRejectResponseDto;
 import com.example.outsourcingproject.order.dto.response.OrderSaveResponseDto;
 import com.example.outsourcingproject.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -31,10 +32,12 @@ public class OrderController {
     }
 
     // 취소(거절) - (가게사장님 만 가능)
-//    @PatchMapping("/reject/{orderId}")
-//    public ResponseEntity<OrderAcceptResponseDto> orderReject(@PathVariable Long orderId){
-//        OrderAcceptResponseDto responseDto = orderService.orderAccept(orderId);
-//
-//        return new ResponseEntity<>(responseDto, HttpStatus.OK);
-//    }
+    @PatchMapping("/reject/{orderId}")
+    public ResponseEntity<OrderRejectResponseDto> orderReject(@PathVariable Long orderId){
+        OrderRejectResponseDto responseDto = orderService.orderReject(orderId);
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+
 }

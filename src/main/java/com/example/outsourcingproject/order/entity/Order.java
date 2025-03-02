@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Entity
 @Table(name = "orders")
@@ -34,9 +36,9 @@ public class Order extends BaseEntity {
     @Setter
     private Status status;
 
-    private Long totalPrice;
+    private Integer totalPrice;
 
-    public Order(User user, Store store, Boolean accepted, Status status, Long totalPrice){
+    public Order(User user, Store store, Boolean accepted, Status status, Integer totalPrice){
         this.user = user;
         this.store = store;
         this.accepted = accepted;

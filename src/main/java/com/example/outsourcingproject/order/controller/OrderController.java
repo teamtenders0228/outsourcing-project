@@ -1,9 +1,11 @@
 package com.example.outsourcingproject.order.controller;
 
 import com.example.outsourcingproject.order.dto.request.OrderSaveRequestDto;
+import com.example.outsourcingproject.order.dto.request.OrderStatusRequestDto;
 import com.example.outsourcingproject.order.dto.response.OrderAcceptResponseDto;
 import com.example.outsourcingproject.order.dto.response.OrderRejectResponseDto;
 import com.example.outsourcingproject.order.dto.response.OrderSaveResponseDto;
+import com.example.outsourcingproject.order.dto.response.OrderStatusResponseDto;
 import com.example.outsourcingproject.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -39,5 +41,14 @@ public class OrderController {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
+    // 주문 상태 변경 - (가게사장님 만 가능)
+    @PatchMapping("/status/{orderId}")
+    public ResponseEntity<OrderStatusResponseDto> statusChange(
+            @PathVariable Long orderId,
+            @RequestBody OrderStatusRequestDto requestDto
+    ){
+        OrderStatusResponseDto responseDto = orderService.statusChange(orderId, requestDto.getStatus());
 
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
 }

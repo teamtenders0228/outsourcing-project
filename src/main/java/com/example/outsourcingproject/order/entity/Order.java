@@ -7,6 +7,7 @@ import com.example.outsourcingproject.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Entity
@@ -26,9 +27,11 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "store_id")
     private Store store;
 
+    @Setter
     private Boolean accepted;
 
     @Enumerated(EnumType.STRING)
+    @Setter
     private Status status;
 
     private Long totalPrice;

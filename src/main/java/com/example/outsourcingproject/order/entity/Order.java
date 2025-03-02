@@ -1,6 +1,7 @@
 package com.example.outsourcingproject.order.entity;
 
 import com.example.outsourcingproject.common.entity.BaseEntity;
+import com.example.outsourcingproject.order.enums.Status;
 import com.example.outsourcingproject.store.entity.Store;
 import com.example.outsourcingproject.user.entity.User;
 import jakarta.persistence.*;
@@ -27,11 +28,12 @@ public class Order extends BaseEntity {
 
     private Boolean accepted;
 
-    private Enum status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     private Long totalPrice;
 
-    public Order(User user, Store store, Boolean accepted, Enum status, Long totalPrice){
+    public Order(User user, Store store, Boolean accepted, Status status, Long totalPrice){
         this.user = user;
         this.store = store;
         this.accepted = accepted;

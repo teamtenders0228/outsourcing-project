@@ -32,7 +32,7 @@ public class MenuService {
         return new MenuResponseDto(
                 menu.getId(),
                 menu.getMenuName(),
-                menu.getPrice()
+                menu.priceToString()
         );
     }
 
@@ -59,7 +59,7 @@ public class MenuService {
         return new MenuResponseDto(
                 menu.getId(),
                 menu.getMenuName(),
-                menu.getPrice()
+                menu.priceToString()
         );
     }
 
@@ -70,19 +70,17 @@ public class MenuService {
                 () -> new BaseException(ErrorCode.NOT_FOUND_MENU, "메뉴")
         );
 
-        if(dto.getMenuName() != null){
+        if (dto.getMenuName() != null) {
             menu.updateMenuName(dto.getMenuName());
         }
-
-        if(dto.getPrice() != null) {
-            menu.updatePrice(dto.getPrice());
-        }
+        // price를 입력 하지 않으면 자동으로 0
+        menu.updatePrice(dto.getPrice());
 
         log.info("메뉴 수정 성공");
         return new MenuResponseDto(
                 menu.getId(),
                 menu.getMenuName(),
-                menu.getPrice()
+                menu.priceToString()
         );
     }
 

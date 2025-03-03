@@ -23,14 +23,9 @@ public class MenuResponseDto {
         return new MenuResponseDto(
                 menu.getId(),
                 menu.getMenuName(),
-                menu.getPrice()
+                menu.priceToString()
         );
     }
 
-    // 가격에 (,) 넣기  ex) 20,000
-    public String getPrice() {
-        // String -> int
-        int intPrice = Integer.parseInt(price);
-        return String.format("%,d", intPrice);
-    }
+
 }

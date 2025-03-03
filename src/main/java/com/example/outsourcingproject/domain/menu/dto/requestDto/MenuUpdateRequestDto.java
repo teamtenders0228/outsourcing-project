@@ -8,7 +8,7 @@ public class MenuUpdateRequestDto {
 
     private String menuName;
 
-    @Pattern(regexp = "^[0-9]+$", message = "가격은 숫자만 포함되어야 합니다.")
-    private String price;
+    @Min(value = 0, message = "가격은 0 이상이어야 합니다.")
+    private int price;
 
 }

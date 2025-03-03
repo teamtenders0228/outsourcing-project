@@ -1,15 +1,14 @@
 package com.example.outsourcingproject.domain.menu.entity;
 
 import com.example.outsourcingproject.common.entity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Entity
+@Table(name = "menus")
 @NoArgsConstructor
 public class Menu extends BaseEntity {
 
@@ -17,15 +16,32 @@ public class Menu extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String category;
-
+    @Column(nullable = false)
     private String menuName;
 
-    private int price;
+    @Column(nullable = false)
+    private String price;
 
-    public Menu(String category, String menuName, int price) {
-        this.category = category;
+    @ColumnDefault("false")
+    private boolean deleteFlag;
+
+    public Menu(String menuName, String price) {
         this.menuName = menuName;
         this.price = price;
+    }
+
+    // 메뉴 menuName만 수정
+    public void updateMenuName(String menuName) {
+        this.menuName = menuName;
+    }
+
+    // 메뉴 price만 수정
+    public void updatePrice(String price) {
+        this.price = price;
+    }
+
+    // 메뉴 삭제시 deleteFlag -> true로 변환
+    public void updateDeleteFlag() {
+        this.deleteFlag = true;
     }
 }

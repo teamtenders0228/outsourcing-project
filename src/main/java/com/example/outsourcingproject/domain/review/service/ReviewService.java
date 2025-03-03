@@ -7,10 +7,12 @@ import com.example.outsourcingproject.domain.review.entity.Review;
 import com.example.outsourcingproject.domain.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -35,7 +37,7 @@ public class ReviewService {
     }
 
     // 리뷰 다건 조회 (확인 후 삭제)
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ReviewResponseDto> findAll() {
         List<Review> reviews = reviewRepository.findAll();
         return reviews.stream()
@@ -45,8 +47,32 @@ public class ReviewService {
                         review.getRate()
                 )).toList();
     }
+
     // 리뷰 조회 (최신순)
-    // 리뷰 조회 (별점순)
+    public Page<ReviewResponseDto> findReriewsSortedByCreateAt(int page, int size) {
+        int adjustPage = (page > 0) ? page - 1 : 0;
+        Pageable pageable = PageRequest.of(adjustPage, size, Sort.by("createdAt").descending());
+        Page<Review> reviewPage = reviewRepository.findAllByCreatedAt(pageable);
+
+        List<ReviewResponseDto> dtoList = reviewPage.getContent().stream()
+                .map(ReviewResponseDto::toDto)
+                .toList();
+
+        return new PageImpl<>(dtoList, pageable, reviewPage.getTotalElements());
+    }
+
+    // 리뷰 조회 (별점범위)
+    public Page<ReviewResponseDto> findReriewsSortedByRateRange(int minRate, int maxRate, int page, int size) {
+        int adjustPage = (page > 0) ? page - 1 : 0;
+        Pageable pageable = PageRequest.of(adjustPage, size);
+        Page<Review> reviewPage = reviewRepository.findAllByRateRange(minRate, maxRate, pageable);
+
+        List<ReviewResponseDto> dtoList = reviewPage.getContent().stream()
+                .map(ReviewResponseDto::toDto)
+                .toList();
+
+        return new PageImpl<>(dtoList, pageable, reviewPage.getTotalElements());
+    }
 
     // 리뷰 수정
     @Transactional
@@ -55,7 +81,13 @@ public class ReviewService {
                 () -> new RuntimeException("리뷰가 없습니다.")
         );
 
-        review.update(dto.getComments(), dto.getRate());
+        if(review.getComments() != null){
+            review.updateComments(dto.getComments());
+        }
+
+        if(review.getRate() != null){
+            review.updateRate(dto.getRate());
+        }
 
         return new ReviewResponseDto(
                 review.getId(),
@@ -64,6 +96,12 @@ public class ReviewService {
         );
     }
 
-
     // 리뷰 삭제
+    public void deleteReview(Long reviewId) {
+        Review review = reviewRepository.findById(reviewId).orElseThrow(
+                () -> new RuntimeException("리뷰가 없습니다.")
+        );
+
+        reviewRepository.deleteById(reviewId);
+    }
 }

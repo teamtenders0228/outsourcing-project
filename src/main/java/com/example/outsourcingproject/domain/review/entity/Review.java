@@ -1,5 +1,6 @@
 package com.example.outsourcingproject.domain.review.entity;
 
+import com.example.outsourcingproject.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "reviews")
 @NoArgsConstructor
-public class Review {
+public class Review extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,15 +19,20 @@ public class Review {
     private String comments;
 
     @Column(nullable = false)
-    private int rate;
+    private Integer rate;
 
-    public Review(String comments, int rate) {
+    public Review(String comments, Integer rate) {
         this.comments = comments;
         this.rate = rate;
     }
 
-    public void update(String comments, int rate) {
+    // comments만 수정
+    public void updateComments(String comments) {
         this.comments = comments;
+    }
+
+    // rate만 수정
+    public void updateRate(Integer rate) {
         this.rate = rate;
     }
 }

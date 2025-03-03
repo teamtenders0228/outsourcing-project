@@ -5,10 +5,12 @@ import com.example.outsourcingproject.menu.entity.Menu;
 import com.example.outsourcingproject.order.entity.Order;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
 @Table(name = "order_item")
+@NoArgsConstructor
 public class OrderItem extends BaseEntity {
 
     @Id

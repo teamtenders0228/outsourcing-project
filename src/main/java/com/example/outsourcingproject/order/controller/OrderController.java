@@ -2,10 +2,7 @@ package com.example.outsourcingproject.order.controller;
 
 import com.example.outsourcingproject.order.dto.request.OrderSaveRequestDto;
 import com.example.outsourcingproject.order.dto.request.OrderStatusRequestDto;
-import com.example.outsourcingproject.order.dto.response.OrderAcceptResponseDto;
-import com.example.outsourcingproject.order.dto.response.OrderRejectResponseDto;
-import com.example.outsourcingproject.order.dto.response.OrderSaveResponseDto;
-import com.example.outsourcingproject.order.dto.response.OrderStatusResponseDto;
+import com.example.outsourcingproject.order.dto.response.*;
 import com.example.outsourcingproject.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,4 +58,11 @@ public class OrderController {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
+    // 사용자별 주문 내역 조회
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<UserOrdersResponseDto>> findOrdersByUser(@PathVariable Long userId){
+        List<UserOrdersResponseDto> responseDtoList = orderService.findOrdersByUser(userId);
+
+        return new ResponseEntity<>(responseDtoList, HttpStatus.OK);
+    }
 }

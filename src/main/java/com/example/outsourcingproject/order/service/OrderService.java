@@ -1,12 +1,10 @@
 package com.example.outsourcingproject.order.service;
 
+import com.example.outsourcingproject.menu.dto.response.MenuResponseDto;
 import com.example.outsourcingproject.menu.entity.Menu;
 import com.example.outsourcingproject.menu.repository.MenuRepository;
 import com.example.outsourcingproject.order.dto.request.OrderSaveRequestDto;
-import com.example.outsourcingproject.order.dto.response.OrderAcceptResponseDto;
-import com.example.outsourcingproject.order.dto.response.OrderRejectResponseDto;
-import com.example.outsourcingproject.order.dto.response.OrderSaveResponseDto;
-import com.example.outsourcingproject.order.dto.response.OrderStatusResponseDto;
+import com.example.outsourcingproject.order.dto.response.*;
 import com.example.outsourcingproject.order.entity.Order;
 import com.example.outsourcingproject.order.enums.Status;
 import com.example.outsourcingproject.order.repository.OrderRepository;
@@ -21,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -122,5 +122,52 @@ public class OrderService {
         findOrder.setAccepted(accepted);
 
         return new OrderStatusResponseDto(message);
+    }
+
+    // 사용자별 주문 내역 조회
+    public List<UserOrdersResponseDto> findOrdersByUser(Long userId) {
+        DecimalFormat formatter = new DecimalFormat("###,###");
+
+        List<Order> findOrders = orderRepository.findAllByUserId(userId);
+
+        List<UserOrdersResponseDto> dtoList = new ArrayList<>();
+
+        for(Order findOrder : findOrders){
+
+            // menuResponseDtoList
+            List<MenuResponseDto> menuResponseDtoList = new ArrayList<>();
+
+            List<OrderItem> findOrderItems = orderItemRepository.findAllByOrderId(findOrder.getId());
+
+            Integer totalPrice = 0;
+
+            for(OrderItem findOrderItem : findOrderItems){
+                Menu findMenu = menuRepository.findByIdOrElseThrow(findOrderItem.getMenu().getId());
+
+                MenuResponseDto menuResponseDto = new MenuResponseDto(
+                        findMenu.getName(),
+                        formatter.format(findMenu.getPrice()),
+                        findOrderItem.getCount()
+                );
+
+                totalPrice += findMenu.getPrice() * findOrderItem.getCount();
+
+                menuResponseDtoList.add(menuResponseDto);
+            }
+
+            // dtoList
+            Store findStore = storeRepository.findByIdOrElseThrow(findOrder.getStore().getId());
+
+            UserOrdersResponseDto dto = new UserOrdersResponseDto(
+                    findStore.getName(),
+                    menuResponseDtoList,
+                    findStore.getCategory(),
+                    findOrder.getStatus(),
+                    formatter.format(totalPrice)
+            );
+
+            dtoList.add(dto);
+        }
+        return dtoList;
     }
 }

@@ -25,11 +25,11 @@ public class Menu extends BaseEntity {
 
     private String name;
 
-    private BigDecimal price;
+    private Integer price;
 
     private Boolean deleteFlag;
 
-    public Menu (Store store, String name, BigDecimal price, Boolean deleteFlag){
+    public Menu (Store store, String name, Integer price, Boolean deleteFlag){
         this.store = store;
         this.name = name;
         this.price = price;

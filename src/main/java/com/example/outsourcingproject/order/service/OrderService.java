@@ -1,26 +1,71 @@
 package com.example.outsourcingproject.order.service;
 
+import com.example.outsourcingproject.menu.entity.Menu;
+import com.example.outsourcingproject.menu.repository.MenuRepository;
 import com.example.outsourcingproject.order.dto.request.OrderSaveRequestDto;
 import com.example.outsourcingproject.order.dto.response.OrderAcceptResponseDto;
 import com.example.outsourcingproject.order.dto.response.OrderRejectResponseDto;
+import com.example.outsourcingproject.order.dto.response.OrderSaveResponseDto;
 import com.example.outsourcingproject.order.dto.response.OrderStatusResponseDto;
 import com.example.outsourcingproject.order.entity.Order;
 import com.example.outsourcingproject.order.enums.Status;
 import com.example.outsourcingproject.order.repository.OrderRepository;
+import com.example.outsourcingproject.orderItem.entity.OrderItem;
+import com.example.outsourcingproject.orderItem.repository.OrderItemRepository;
+import com.example.outsourcingproject.store.entity.Store;
+import com.example.outsourcingproject.store.repository.StoreRepository;
+import com.example.outsourcingproject.user.entity.User;
+import com.example.outsourcingproject.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
+    private final StoreRepository storeRepository;
+    private final MenuRepository menuRepository;
+    private final OrderItemRepository orderItemRepository;
 
     // 주문 요청 - (일반 유저만 가능)
-//    public void orderSave(OrderSaveRequestDto.MenuRequest menus) {
-//        menus.
-//    }
+    public OrderSaveResponseDto orderSave(Long storeId, List<OrderSaveRequestDto> menus) {
+        Long userId = 1L;
+
+        User findUser = userRepository.findByIdOrElseThrow(userId);
+        Store findStore = storeRepository.findByIdOrElseThrow(storeId);
+
+        // totalPrice 계산
+        Integer totalPrice = 0;
+
+        for(OrderSaveRequestDto menu : menus){
+            Menu findMenu = menuRepository.findByIdOrElseThrow(menu.getMenuId());
+
+            totalPrice += findMenu.getPrice() * menu.getCount();
+        }
+
+        // newOrder 저장
+        Order newOrder = new Order(findUser, findStore, false, Status.PENDING, totalPrice);
+
+        Order savedOrder = orderRepository.save(newOrder);
+
+        // newOrderItem 저장
+        for(OrderSaveRequestDto menu : menus){
+            Menu findMenu = menuRepository.findByIdOrElseThrow(menu.getMenuId());
+
+            OrderItem newOrderItem = new OrderItem(savedOrder, findMenu, menu.getCount());
+
+            orderItemRepository.save(newOrderItem);
+        }
+
+        return new OrderSaveResponseDto("주문이 완료되었습니다.");
+    }
 
     // 수락 - (가게사장님 만 가능)
     @Transactional

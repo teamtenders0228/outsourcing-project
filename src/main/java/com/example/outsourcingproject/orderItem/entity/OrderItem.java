@@ -16,7 +16,7 @@ public class OrderItem extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", unique = true)
+    @JoinColumn(name = "order_id")
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -24,4 +24,10 @@ public class OrderItem extends BaseEntity {
     private Menu menu;
 
     private Integer count;
+
+    public OrderItem (Order order, Menu menu, Integer count){
+        this.order = order;
+        this.menu = menu;
+        this.count = count;
+    }
 }

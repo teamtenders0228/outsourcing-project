@@ -8,22 +8,31 @@ import com.example.outsourcingproject.order.dto.response.OrderSaveResponseDto;
 import com.example.outsourcingproject.order.dto.response.OrderStatusResponseDto;
 import com.example.outsourcingproject.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
+@Slf4j
 public class OrderController {
 
     private final OrderService orderService;
 
     // 주문 요청 - (일반 유저만 가능)
-//    @PostMapping("/{store_id}")
-//    public ResponseEntity<OrderSaveResponseDto> orderSave(@RequestBody OrderSaveRequestDto requestDto){
-//        orderService.orderSave(requestDto.getMenus());
-//    }
+    @PostMapping("/{storeId}")
+    public ResponseEntity<OrderSaveResponseDto> orderSave(
+            @PathVariable Long storeId,
+            @RequestBody List<OrderSaveRequestDto> requestDto
+    ){
+        OrderSaveResponseDto responseDto = orderService.orderSave(storeId, requestDto);
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
 
     // 수락 - (가게사장님 만 가능)
     @PatchMapping("/accept/{orderId}")
@@ -51,4 +60,5 @@ public class OrderController {
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
+
 }

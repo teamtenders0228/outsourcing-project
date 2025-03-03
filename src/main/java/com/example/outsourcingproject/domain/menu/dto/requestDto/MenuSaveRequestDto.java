@@ -1,9 +1,6 @@
 package com.example.outsourcingproject.domain.menu.dto.requestDto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 
 @Getter
@@ -13,7 +10,8 @@ public class MenuSaveRequestDto {
     @Size(min = 1, max = 20, message = "메뉴는 1 ~ 20자 이어야 합니다.")
     private String menuName;
 
+    @NotNull(message = "가격을 입력하세요.")
     @Min(value = 0, message = "가격은 0 이상이어야 합니다.")
-    private int price;
+    private Integer price;
 
 }

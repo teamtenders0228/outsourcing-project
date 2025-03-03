@@ -20,12 +20,12 @@ public class Menu extends BaseEntity {
     private String menuName;
 
     @Column(nullable = false)
-    private int price;
+    private Integer price;
 
     @ColumnDefault("false")
     private boolean deleteFlag;
 
-    public Menu(String menuName, int price) {
+    public Menu(String menuName, Integer price) {
         this.menuName = menuName;
         this.price = price;
     }
@@ -36,7 +36,7 @@ public class Menu extends BaseEntity {
     }
 
     // 메뉴 price만 수정
-    public void updatePrice(int price) {
+    public void updatePrice(Integer price) {
         this.price = price;
     }
 

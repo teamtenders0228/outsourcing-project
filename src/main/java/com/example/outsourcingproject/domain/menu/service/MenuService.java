@@ -73,8 +73,10 @@ public class MenuService {
         if (dto.getMenuName() != null) {
             menu.updateMenuName(dto.getMenuName());
         }
-        // price를 입력 하지 않으면 자동으로 0
-        menu.updatePrice(dto.getPrice());
+
+        if (dto.getPrice() != null){
+            menu.updatePrice(dto.getPrice());
+        }
 
         log.info("메뉴 수정 성공");
         return new MenuResponseDto(

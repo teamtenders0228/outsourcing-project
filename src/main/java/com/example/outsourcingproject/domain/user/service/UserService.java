@@ -10,6 +10,7 @@ import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.example.outsourcingproject.common.exception.ErrorCode.*;
 
@@ -25,25 +26,27 @@ public class UserService {
         return new UserResponseDto(user.getName(), user.getEmail(), user.getPhone(), user.getAddress());
     }
 
+    @Transactional
     public void changePassword(Long id, ChangePasswordRequestDto requestDto) {
         User user = userRepository.findById(id).orElseThrow(() -> new BaseException(USER_NOT_FOUND, null));
 
-        if(user.getDeleteFlag()){
-            throw new BaseException(USER_NOT_FOUND, null);
-        }
+        if(user.getDeleteFlag()){ throw new BaseException(INACTIVE_USER, null); }
         if(!passwordEncoder.matches(requestDto.getOldPassword(), user.getPassword())) {
             throw new BaseException(PASSWORD_MISMATCH, null);
         }
 
-        if(requestDto.getOldPassword() == requestDto.getNewPassword()) {
+        if(requestDto.getOldPassword().equals(requestDto.getNewPassword())) {
             throw new BaseException(PASSWORD_SAME_AS_OLD, null);
         }
 
         user.changePassword(passwordEncoder.encode(requestDto.getNewPassword()));
     }
 
+    @Transactional
     public void changeProfile(Long id, ChangeProfileRequestDto requestDto) {
         User user = userRepository.findById(id).orElseThrow(() -> new BaseException(USER_NOT_FOUND, null));
+
+        if(user.getDeleteFlag()){ throw new BaseException(INACTIVE_USER, null); }
 
         if(requestDto.getName() == null || requestDto.getPhone() == null || requestDto.getAddress() == null) {
             throw new BaseException(INVALID_FORM, null);
@@ -52,13 +55,16 @@ public class UserService {
         user.changeProfile(requestDto.getName(), requestDto.getPhone(), requestDto.getAddress());
     }
 
+    @Transactional
     public void deleteUser(Long id, String password) {
         User user = userRepository.findById(id).orElseThrow(() -> new BaseException(USER_NOT_FOUND, null));
+
+        if(user.getDeleteFlag()){ throw new BaseException(INACTIVE_USER, null); }
 
         if(!passwordEncoder.matches(password, user.getPassword())){
             throw new BaseException(PASSWORD_MISMATCH, null);
         }
 
-        user.deleted();
+        user.deleteUser();
     }
 }

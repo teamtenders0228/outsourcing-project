@@ -10,14 +10,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.server.PathContainer;
-import org.springframework.web.util.pattern.PathPattern;
-import org.springframework.web.util.pattern.PathPatternParser;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Set;
 
 @Slf4j
+@Component
 @RequiredArgsConstructor
 public class JwtFilter implements Filter {
     private final JwtUtil jwtUtil;
@@ -34,26 +33,21 @@ public class JwtFilter implements Filter {
     }
 
     @Override
-    public void destroy() {
-        Filter.super.destroy();
-    }
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-    @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
-
-        String url = httpServletRequest.getRequestURI();
+        String url = httpRequest.getRequestURI();
 
         if(isWhiteListed(url)) {
-            filterChain.doFilter(servletRequest, servletResponse);
+            chain.doFilter(request, response);
             return;
         }
 
-        String bearerJwt = httpServletRequest.getHeader("Authorization");
+        String bearerJwt = httpRequest.getHeader("Authorization");
 
-        if(bearerJwt == null){
-            httpServletResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "JWT 토큰이 필요합니다.");
+        if(bearerJwt == null) {
+            httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "JWT 토큰이 필요합니다.");
             return;
         }
 
@@ -62,39 +56,44 @@ public class JwtFilter implements Filter {
         try {
             Claims claims = jwtUtil.extractClaims(jwt);
             if (claims == null) {
-                httpServletResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "잘못된 JWT 토큰입니다.");
+                httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "잘못된 JWT 토큰입니다.");
                 return;
             }
 
-            UserRole userRole = UserRole.valueOf(claims.get("userRole", String.class));
+            UserRole userRole = UserRole.of(claims.get("userRole", String.class));
 
-            httpServletRequest.setAttribute("userId", Long.parseLong(claims.getSubject()));
-            httpServletRequest.setAttribute("email", claims.get("email"));
-            httpServletRequest.setAttribute("userRole", claims.get("userRole"));
+            httpRequest.setAttribute("userId", Long.parseLong(claims.getSubject()));
+            httpRequest.setAttribute("email", claims.get("email"));
+            httpRequest.setAttribute("userRole", claims.get("userRole"));
 
-            if(url.startsWith("/owner")) {
-                if(!UserRole.OWNER.equals(userRole)) {
-                    httpServletResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "해당 기능에 대한 권한이 없습니다.");
+            if (url.startsWith("/admin")) {
+                if (!UserRole.ADMIN.equals(userRole)) {
+                    httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "관리자 권한이 없습니다.");
                     return;
                 }
-                filterChain.doFilter(servletRequest, servletResponse);
+                chain.doFilter(request, response);
                 return;
             }
 
-            filterChain.doFilter(servletRequest, servletResponse);
+            chain.doFilter(request, response);
         } catch (SecurityException | MalformedJwtException e) {
             log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.", e);
-            httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않는 JWT 서명입니다.");
+            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않는 JWT 서명입니다.");
         } catch (ExpiredJwtException e) {
             log.error("Expired JWT token, 만료된 JWT token 입니다.", e);
-            httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "만료된 JWT 토큰입니다.");
+            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "만료된 JWT 토큰입니다.");
         } catch (UnsupportedJwtException e) {
             log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.", e);
-            httpServletResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "지원되지 않는 JWT 토큰입니다.");
+            httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "지원되지 않는 JWT 토큰입니다.");
         } catch (Exception e) {
             log.error("Invalid JWT token, 유효하지 않는 JWT 토큰 입니다.", e);
-            httpServletResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "유효하지 않는 JWT 토큰입니다.");
+            httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "유효하지 않는 JWT 토큰입니다.");
         }
+    }
+
+    @Override
+    public void destroy() {
+        Filter.super.destroy();
     }
 
     private boolean isWhiteListed(String requestURI) {

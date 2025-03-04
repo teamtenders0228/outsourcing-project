@@ -52,7 +52,7 @@ public class OrderController {
     @PatchMapping("/status/{orderId}")
     public ResponseEntity<OrderStatusResponseDto> statusChange(
             @PathVariable Long orderId,
-            @Valid @RequestBody OrderStatusRequestDto requestDto
+            @RequestBody OrderStatusRequestDto requestDto
     ){
         OrderStatusResponseDto responseDto = orderService.statusChange(orderId, requestDto.getStatus());
 

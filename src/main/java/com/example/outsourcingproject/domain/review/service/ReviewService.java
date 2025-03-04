@@ -1,5 +1,7 @@
 package com.example.outsourcingproject.domain.review.service;
 
+import com.example.outsourcingproject.common.exception.BaseException;
+import com.example.outsourcingproject.common.exception.ErrorCode;
 import com.example.outsourcingproject.domain.review.dto.request.ReviewSaveRequestDto;
 import com.example.outsourcingproject.domain.review.dto.request.ReviewUpdateRequestDto;
 import com.example.outsourcingproject.domain.review.dto.response.ReviewResponseDto;
@@ -78,7 +80,7 @@ public class ReviewService {
     @Transactional
     public ReviewResponseDto updateReview(Long reviewId, ReviewUpdateRequestDto dto) {
         Review review = reviewRepository.findById(reviewId).orElseThrow(
-                () -> new RuntimeException("리뷰가 없습니다.")
+                () -> new BaseException(ErrorCode.REVIEW_NOT_FOUND, null)
         );
 
         if(review.getComments() != null){
@@ -99,7 +101,7 @@ public class ReviewService {
     // 리뷰 삭제
     public void deleteReview(Long reviewId) {
         Review review = reviewRepository.findById(reviewId).orElseThrow(
-                () -> new RuntimeException("리뷰가 없습니다.")
+                () -> new BaseException(ErrorCode.REVIEW_NOT_FOUND, null)
         );
 
         reviewRepository.deleteById(reviewId);

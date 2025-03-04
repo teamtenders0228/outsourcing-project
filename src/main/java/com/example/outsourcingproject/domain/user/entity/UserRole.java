@@ -1,6 +1,7 @@
 package com.example.outsourcingproject.domain.user.entity;
 
-import com.example.outsourcingproject.domain.auth.exception.InvalidUserRoleException;
+import com.example.outsourcingproject.common.exception.BaseException;
+import com.example.outsourcingproject.common.exception.ErrorCode;
 
 import java.util.Arrays;
 
@@ -13,6 +14,6 @@ public enum UserRole {
         return Arrays.stream(UserRole.values())
                 .filter(r -> r.name().equalsIgnoreCase(role))
                 .findFirst()
-                .orElseThrow(() -> new InvalidUserRoleException());
+                .orElseThrow(() -> new BaseException(ErrorCode.INVALID_USER_ROLE, null));
     }
 }

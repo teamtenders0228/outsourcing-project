@@ -1,22 +1,17 @@
 package com.example.outsourcingproject.domain.user.service;
 
 import com.example.outsourcingproject.common.encoder.PasswordEncoder;
-import com.example.outsourcingproject.domain.auth.exception.InvalidFormException;
-import com.example.outsourcingproject.domain.auth.exception.PasswordMismatchException;
-import com.example.outsourcingproject.domain.auth.exception.UserNotExistException;
+import com.example.outsourcingproject.common.exception.BaseException;
 import com.example.outsourcingproject.domain.user.dto.ChangePasswordRequestDto;
 import com.example.outsourcingproject.domain.user.dto.ChangeProfileRequestDto;
 import com.example.outsourcingproject.domain.user.dto.UserResponseDto;
 import com.example.outsourcingproject.domain.user.entity.User;
-import com.example.outsourcingproject.domain.user.exception.DuplicatePasswordException;
-import com.example.outsourcingproject.domain.user.exception.UserNotFoundException;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import static com.example.outsourcingproject.common.exception.ErrorCode.*;
 
 @Slf4j
 @Service
@@ -26,42 +21,42 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public UserResponseDto getUser(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
+        User user = userRepository.findById(id).orElseThrow(() -> new BaseException(USER_NOT_FOUND, null));
         return new UserResponseDto(user.getName(), user.getEmail(), user.getPhone(), user.getAddress());
     }
 
-    public void changePassword(Long id, @Valid ChangePasswordRequestDto requestDto) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
+    public void changePassword(Long id, ChangePasswordRequestDto requestDto) {
+        User user = userRepository.findById(id).orElseThrow(() -> new BaseException(USER_NOT_FOUND, null));
 
         if(user.getDeleteFlag()){
-            throw new UserNotExistException();
+            throw new BaseException(USER_NOT_FOUND, null);
         }
         if(!passwordEncoder.matches(requestDto.getOldPassword(), user.getPassword())) {
-            throw new PasswordMismatchException();
+            throw new BaseException(PASSWORD_MISMATCH, null);
         }
 
         if(requestDto.getOldPassword() == requestDto.getNewPassword()) {
-            throw new DuplicatePasswordException();
+            throw new BaseException(PASSWORD_SAME_AS_OLD, null);
         }
 
         user.changePassword(passwordEncoder.encode(requestDto.getNewPassword()));
     }
 
-    public void changeProfile(Long id, @Valid ChangeProfileRequestDto requestDto) {
-        User user = userRepository.findById(id).orElseThrow(()-> new UserNotFoundException());
+    public void changeProfile(Long id, ChangeProfileRequestDto requestDto) {
+        User user = userRepository.findById(id).orElseThrow(() -> new BaseException(USER_NOT_FOUND, null));
 
         if(requestDto.getName() == null || requestDto.getPhone() == null || requestDto.getAddress() == null) {
-            throw new InvalidFormException("잘못된 형식입니다.");
+            throw new BaseException(INVALID_FORM, null);
         }
 
         user.changeProfile(requestDto.getName(), requestDto.getPhone(), requestDto.getAddress());
     }
 
     public void deleteUser(Long id, String password) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
+        User user = userRepository.findById(id).orElseThrow(() -> new BaseException(USER_NOT_FOUND, null));
 
         if(!passwordEncoder.matches(password, user.getPassword())){
-            throw new PasswordMismatchException();
+            throw new BaseException(PASSWORD_MISMATCH, null);
         }
 
         user.deleted();

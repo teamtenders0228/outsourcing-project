@@ -1,7 +1,10 @@
 package com.example.outsourcingproject.domain.order.service;
 
+import com.example.outsourcingproject.common.exception.BaseException;
+import com.example.outsourcingproject.common.exception.ErrorCode;
 import com.example.outsourcingproject.domain.order.dto.response.*;
 import com.example.outsourcingproject.domain.user.entity.User;
+import com.example.outsourcingproject.domain.user.entity.UserRole;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import com.example.outsourcingproject.domain.menu.dto.response.MenuResponseDto;
 import com.example.outsourcingproject.domain.menu.entity.Menu;
@@ -23,6 +26,9 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.outsourcingproject.common.exception.ErrorCode.ORDER_ONLY_FOR_REGULAR_USER;
+import static com.example.outsourcingproject.domain.user.entity.UserRole.USER;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -35,8 +41,9 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
 
     // 주문 요청 - (일반 유저만 가능)
-    public void orderSave(Long storeId, List<OrderSaveRequestDto> menus) {
-        Long userId = 1L;
+    public void orderSave(Long userId, UserRole userRole, Long storeId, List<OrderSaveRequestDto> menus) {
+        // 일반 유저인지 판별
+        if(userRole != UserRole.USER) throw new BaseException(ErrorCode.ORDER_ONLY_FOR_REGULAR_USER, null);
 
         User findUser = userRepository.findByIdOrElseThrow(userId);
         Store findStore = storeRepository.findByIdOrElseThrow(storeId);
@@ -67,7 +74,10 @@ public class OrderService {
 
     // 수락 - (가게사장님 만 가능)
     @Transactional
-    public void orderAccept(Long orderId) {
+    public void orderAccept(UserRole userRole, Long orderId) {
+        // 가게 사장인지 판별
+        if(userRole != UserRole.OWNER) throw new BaseException(ErrorCode.ORDER_ACCEPT_ONLY_FOR_OWNER, null);
+
         Order findOrder = orderRepository.findByIdOrElseThrow(orderId);
 
         findOrder.setStatus(Status.ACCEPT);
@@ -76,7 +86,10 @@ public class OrderService {
 
     // 취소(거절) - (가게사장님 만 가능)
     @Transactional
-    public void orderReject(Long orderId) {
+    public void orderReject(UserRole userRole, Long orderId) {
+        // 가게 사장인지 판별
+        if(userRole != UserRole.OWNER) throw new BaseException(ErrorCode.ORDER_REJECT_ONLY_FOR_OWNER, null);
+
         Order findOrder = orderRepository.findByIdOrElseThrow(orderId);
 
         findOrder.setStatus(Status.REJECT);
@@ -85,7 +98,10 @@ public class OrderService {
 
     // 주문 상태 변경 - (가게사장님 만 가능)
     @Transactional
-    public OrderStatusResponseDto statusChange(Long orderId, Status status) {
+    public OrderStatusResponseDto statusChange(UserRole userRole, Long orderId, Status status) {
+        // 가게 사장인지 판별
+        if(userRole != UserRole.OWNER) throw new BaseException(ErrorCode.ORDER_STATUS_ONLY_FOR_OWNER, null);
+
         Order findOrder = orderRepository.findByIdOrElseThrow(orderId);
 
         Boolean accepted = true;

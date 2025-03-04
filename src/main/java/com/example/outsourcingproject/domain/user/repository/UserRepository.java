@@ -1,5 +1,7 @@
 package com.example.outsourcingproject.domain.user.repository;
 
+import com.example.outsourcingproject.common.exception.BaseException;
+import com.example.outsourcingproject.common.exception.ErrorCode;
 import com.example.outsourcingproject.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findById(Long id);
 
     default User findByIdOrElseThrow(Long id){
-        return findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exists id: " + id));
+        return findById(id).orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND, null));
     }
 }

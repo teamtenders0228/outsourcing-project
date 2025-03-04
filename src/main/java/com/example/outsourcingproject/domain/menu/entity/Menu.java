@@ -17,7 +17,7 @@ public class Menu extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id")
+    @JoinColumn(name = "stores_id")
     private Store store;
 
     private String name;

@@ -1,5 +1,7 @@
 package com.example.outsourcingproject.domain.store.service;
 
+import com.example.outsourcingproject.common.exception.BaseException;
+import com.example.outsourcingproject.common.exception.ErrorCode;
 import com.example.outsourcingproject.domain.store.dto.request.StoreCreateRequestDto;
 import com.example.outsourcingproject.domain.store.dto.response.StoreResponseDto;
 import com.example.outsourcingproject.domain.store.entity.Store;
@@ -19,6 +21,10 @@ public class StoreService {
         // 유저 등급 검증
         // 유저 검증
         // 가게 개수 검증
+        // 가게 이름 중복 검증
+        if(storeRepository.existsByStoreName(dto.getStoreName())){
+          throw new BaseException(ErrorCode.CONFLICT_STORE_NAME, null);
+        }
         // 가게 카테고리
         StoreCategory category = StoreCategory.of(dto.getCategory());
 

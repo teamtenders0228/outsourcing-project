@@ -47,4 +47,6 @@ public class Store extends BaseEntity {
     @Column(nullable = false)
     private boolean closedFlag;
 
+    //유저 이름 컬럼 추가 필요
+
 }

@@ -11,10 +11,14 @@ import com.example.outsourcingproject.domain.user.entity.UserRole;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 import static com.example.outsourcingproject.common.exception.ErrorCode.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -47,6 +51,7 @@ public class AuthService {
     }
 
     public SigninResponseDto signin(@Valid SigninRequestDto signinRequestDto) {
+
         User user = userRepository.findByEmail(signinRequestDto.getEmail()).orElseThrow(
                 () -> new BaseException(USER_NOT_EXIST, null));
 
@@ -55,8 +60,8 @@ public class AuthService {
         }
 
         String bearerToken = jwtUtil.createAccessToken(user.getId(), user.getEmail(), user.getUserRole());
+        jwtUtil.createRefreshToken(user.getId());
 
         return new SigninResponseDto(bearerToken);
     }
-
 }

@@ -1,5 +1,6 @@
 package com.example.outsourcingproject.domain.menu.service;
 
+import com.example.outsourcingproject.common.dto.AuthUser;
 import com.example.outsourcingproject.common.exception.BaseException;
 import com.example.outsourcingproject.common.exception.ErrorCode;
 import com.example.outsourcingproject.domain.menu.dto.requestDto.MenuSaveRequestDto;
@@ -7,6 +8,7 @@ import com.example.outsourcingproject.domain.menu.dto.requestDto.MenuUpdateReque
 import com.example.outsourcingproject.domain.menu.dto.responseDto.MenuResponseDto;
 import com.example.outsourcingproject.domain.menu.entity.Menu;
 import com.example.outsourcingproject.domain.menu.repository.MenuRepository;
+import com.example.outsourcingproject.domain.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
@@ -25,7 +27,12 @@ public class MenuService {
 
     // 메뉴 등록
     @Transactional
-    public MenuResponseDto saveMenu(MenuSaveRequestDto dto) {
+    public MenuResponseDto saveMenu(AuthUser authUser, MenuSaveRequestDto dto) {
+        // OWNER 검증
+        if(!authUser.getUserRole().equals(UserRole.OWNER)){
+            throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
+        }
+
         Menu menu = new Menu(dto.getMenuName(), dto.getPrice());
         menuRepository.save(menu);
 
@@ -53,8 +60,9 @@ public class MenuService {
     // 메뉴 단건 조회
     @Transactional(readOnly = true)
     public MenuResponseDto findById(Long menuId) {
+        // menu 검증
         Menu menu = menuRepository.findById(menuId).orElseThrow(
-                () -> new BaseException(ErrorCode.NOT_FOUND_MENU, "메뉴")
+                () -> new BaseException(ErrorCode.NOT_FOUND_MENU, null)
         );
         return new MenuResponseDto(
                 menu.getId(),
@@ -65,9 +73,15 @@ public class MenuService {
 
     // 메뉴 수정
     @Transactional
-    public MenuResponseDto updateMenu(Long menuId, MenuUpdateRequestDto dto) {
+    public MenuResponseDto updateMenu(AuthUser authUser, Long menuId, MenuUpdateRequestDto dto) {
+        // OWNER 검증
+        if(!authUser.getUserRole().equals(UserRole.OWNER)){
+            throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
+        }
+
+        // menu 검증
         Menu menu = menuRepository.findById(menuId).orElseThrow(
-                () -> new BaseException(ErrorCode.NOT_FOUND_MENU, "메뉴")
+                () -> new BaseException(ErrorCode.NOT_FOUND_MENU, null)
         );
 
         if (dto.getMenuName() != null) {
@@ -88,9 +102,15 @@ public class MenuService {
 
     // 메뉴 삭제
     @Transactional
-    public void deleteMenu(Long menuId) {
+    public void deleteMenu(AuthUser authUser, Long menuId) {
+        // OWNER 검증
+        if(!authUser.getUserRole().equals(UserRole.OWNER)){
+            throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
+        }
+
+        // menu 검증
         Menu menu = menuRepository.findById(menuId).orElseThrow(
-                () -> new BaseException(ErrorCode.NOT_FOUND_MENU, "메뉴")
+                () -> new BaseException(ErrorCode.NOT_FOUND_MENU, null)
         );
         log.info("메뉴 삭제 성공");
         menu.updateDeleteFlag();

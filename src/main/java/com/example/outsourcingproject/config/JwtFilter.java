@@ -22,9 +22,7 @@ public class JwtFilter implements Filter {
     private final JwtUtil jwtUtil;
 
     private static final Set<String> WHITE_LIST_ENDPOINTS = Set.of(
-            "/api/v1/auth",
-            "/api/v1/stores",
-            "/api/v1/menus"
+            "/api/v1/auth"
     );
 
     @Override

@@ -35,7 +35,7 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
 
     // 주문 요청 - (일반 유저만 가능)
-    public OrderSaveResponseDto orderSave(Long storeId, List<OrderSaveRequestDto> menus) {
+    public void orderSave(Long storeId, List<OrderSaveRequestDto> menus) {
         Long userId = 1L;
 
         User findUser = userRepository.findByIdOrElseThrow(userId);
@@ -63,30 +63,24 @@ public class OrderService {
 
             orderItemRepository.save(newOrderItem);
         }
-
-        return new OrderSaveResponseDto("주문이 완료되었습니다.");
     }
 
     // 수락 - (가게사장님 만 가능)
     @Transactional
-    public OrderAcceptResponseDto orderAccept(Long orderId) {
+    public void orderAccept(Long orderId) {
         Order findOrder = orderRepository.findByIdOrElseThrow(orderId);
 
         findOrder.setStatus(Status.ACCEPT);
         findOrder.setAccepted(true);
-
-        return new OrderAcceptResponseDto("주문이 수락되었습니다.");
     }
 
     // 취소(거절) - (가게사장님 만 가능)
     @Transactional
-    public OrderRejectResponseDto orderReject(Long orderId) {
+    public void orderReject(Long orderId) {
         Order findOrder = orderRepository.findByIdOrElseThrow(orderId);
 
         findOrder.setStatus(Status.REJECT);
         findOrder.setAccepted(false);
-
-        return new OrderRejectResponseDto("주문이 거절되었습니다. 불편을 드려 죄송합니다.");
     }
 
     // 주문 상태 변경 - (가게사장님 만 가능)

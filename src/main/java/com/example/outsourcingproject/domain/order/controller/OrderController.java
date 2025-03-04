@@ -23,29 +23,29 @@ public class OrderController {
 
     // 주문 요청 - (일반 유저만 가능)
     @PostMapping("/{storeId}")
-    public ResponseEntity<OrderSaveResponseDto> orderSave(
+    public ResponseEntity<String> orderSave(
             @PathVariable Long storeId,
             @Valid @RequestBody List<OrderSaveRequestDto> requestDto
     ){
-        OrderSaveResponseDto responseDto = orderService.orderSave(storeId, requestDto);
+        orderService.orderSave(storeId, requestDto);
 
-        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+        return new ResponseEntity<>("주문이 완료되었습니다.", HttpStatus.CREATED);
     }
 
     // 수락 - (가게사장님 만 가능)
     @PatchMapping("/accept/{orderId}")
-    public ResponseEntity<OrderAcceptResponseDto> orderAccept(@PathVariable Long orderId){
-        OrderAcceptResponseDto responseDto = orderService.orderAccept(orderId);
+    public ResponseEntity<String> orderAccept(@PathVariable Long orderId){
+        orderService.orderAccept(orderId);
 
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        return new ResponseEntity<>("주문이 수락되었습니다.", HttpStatus.OK);
     }
 
     // 취소(거절) - (가게사장님 만 가능)
     @PatchMapping("/reject/{orderId}")
-    public ResponseEntity<OrderRejectResponseDto> orderReject(@PathVariable Long orderId){
-        OrderRejectResponseDto responseDto = orderService.orderReject(orderId);
+    public ResponseEntity<String> orderReject(@PathVariable Long orderId){
+        orderService.orderReject(orderId);
 
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        return new ResponseEntity<>("주문이 거절되었습니다. 불편을 드려 죄송합니다.", HttpStatus.OK);
     }
 
     // 주문 상태 변경 - (가게사장님 만 가능)

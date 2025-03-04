@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,9 +22,10 @@ public class MenuController {
 
     // 메뉴 등록
     @PostMapping("/menus")
-    public ResponseEntity<MenuResponseDto> saveMenu(@Valid @RequestBody MenuSaveRequestDto dto) {
+    public ResponseEntity<String> saveMenu(@Valid @RequestBody MenuSaveRequestDto dto) {
+        menuService.saveMenu(dto);
         log.info("메뉴 생성 성공");
-        return ResponseEntity.ok(menuService.saveMenu(dto));
+        return new ResponseEntity<>("message : 메뉴 등록이 완료되었습니다.", HttpStatus.OK);
     }
 
     // 메뉴 전체 조회
@@ -43,19 +45,21 @@ public class MenuController {
 
     // 메뉴 수정
     @PatchMapping("/menus/{menuId}")
-    public ResponseEntity<MenuResponseDto> updateMenu(
+    public ResponseEntity<String> updateMenu(
             @PathVariable Long menuId,
             @Valid @RequestBody MenuUpdateRequestDto dto
     ) {
+        menuService.updateMenu(menuId, dto);
         log.info("메뉴 수정 성공");
-        return ResponseEntity.ok(menuService.updateMenu(menuId, dto));
+        return new ResponseEntity<>("message : 메뉴 수정이 완료되었습니다.", HttpStatus.OK);
     }
 
     // 메뉴 삭제
     @DeleteMapping("/menus/{menuId}")
-    public void deleteMenu(@PathVariable Long menuId) {
+    public ResponseEntity<String> deleteMenu(@PathVariable Long menuId) {
         log.info("메뉴 삭제 성공");
         menuService.deleteMenu(menuId);
+        return new ResponseEntity<>("message : 메뉴 삭제가 완료되었습니다.", HttpStatus.OK);
     }
 
 }

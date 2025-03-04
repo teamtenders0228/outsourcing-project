@@ -21,12 +21,6 @@ import java.util.Set;
 public class JwtFilter implements Filter {
     private final JwtUtil jwtUtil;
 
-    private static final Set<String> WHITE_LIST_ENDPOINTS = Set.of(
-            "/api/v1/auth",
-            "/api/v1/stores",
-            "/api/v1/menus"
-    );
-
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         Filter.super.init(filterConfig);
@@ -39,7 +33,7 @@ public class JwtFilter implements Filter {
 
         String url = httpRequest.getRequestURI();
 
-        if(isWhiteListed(url)) {
+        if(url.startsWith("/auth")) {
             chain.doFilter(request, response);
             return;
         }
@@ -94,9 +88,5 @@ public class JwtFilter implements Filter {
     @Override
     public void destroy() {
         Filter.super.destroy();
-    }
-
-    private boolean isWhiteListed(String requestURI) {
-        return WHITE_LIST_ENDPOINTS.stream().anyMatch(requestURI::startsWith);
     }
 }

@@ -8,11 +8,12 @@ import com.example.outsourcingproject.domain.menu.dto.requestDto.MenuUpdateReque
 import com.example.outsourcingproject.domain.menu.dto.responseDto.MenuResponseDto;
 import com.example.outsourcingproject.domain.menu.entity.Menu;
 import com.example.outsourcingproject.domain.menu.repository.MenuRepository;
+import com.example.outsourcingproject.domain.store.entity.Store;
+import com.example.outsourcingproject.domain.store.repository.StoreRepository;
 import com.example.outsourcingproject.domain.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,20 +25,27 @@ import java.util.List;
 public class MenuService {
 
     private final MenuRepository menuRepository;
+    private final StoreRepository storeRepository;
 
     // 메뉴 등록
     @Transactional
-    public MenuResponseDto saveMenu(AuthUser authUser, MenuSaveRequestDto dto) {
+    public MenuResponseDto saveMenu(AuthUser authUser, MenuSaveRequestDto dto, Long storeId) {
         // OWNER 검증
         if(!authUser.getUserRole().equals(UserRole.OWNER)){
             throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
         }
 
-        Menu menu = new Menu(dto.getMenuName(), dto.getPrice());
+        // Store 검증
+        Store store = storeRepository.findById(storeId).orElseThrow(
+                () -> new RuntimeException("가게가 없습니다.")
+        );
+
+        Menu menu = new Menu(dto.getMenuName(), dto.getPrice(), store);
         menuRepository.save(menu);
 
         return new MenuResponseDto(
                 menu.getId(),
+                store.getId(),
                 menu.getMenuName(),
                 menu.priceToString()
         );
@@ -45,11 +53,16 @@ public class MenuService {
 
     // 메뉴 전체 조회
     @Transactional(readOnly = true)
-    public Page<MenuResponseDto> findAllMenu(AuthUser authUser, int page, int size) {
+    public Page<MenuResponseDto> findAllMenu(AuthUser authUser, int page, int size, Long storeId) {
         // OWNER 검증
         if(!authUser.getUserRole().equals(UserRole.OWNER)){
             throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
         }
+
+        // Store 검증
+        Store store = storeRepository.findById(storeId).orElseThrow(
+                () -> new RuntimeException("가게가 없습니다.")
+        );
 
         int adjustPage = (page > 0) ? page - 1 : 0;
         Pageable pageable = PageRequest.of(adjustPage, size, Sort.by("updatedAt").descending());
@@ -64,11 +77,16 @@ public class MenuService {
 
     // 메뉴 단건 조회
     @Transactional(readOnly = true)
-    public MenuResponseDto findById(AuthUser authUser, Long menuId) {
+    public MenuResponseDto findById(AuthUser authUser, Long menuId, Long storeId) {
         // OWNER 검증
         if(!authUser.getUserRole().equals(UserRole.OWNER)){
             throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
         }
+
+        // Store 검증
+        Store store = storeRepository.findById(storeId).orElseThrow(
+                () -> new RuntimeException("가게가 없습니다.")
+        );
 
         // menu 검증
         Menu menu = menuRepository.findById(menuId).orElseThrow(
@@ -76,6 +94,7 @@ public class MenuService {
         );
         return new MenuResponseDto(
                 menu.getId(),
+                store.getId(),
                 menu.getMenuName(),
                 menu.priceToString()
         );
@@ -83,11 +102,16 @@ public class MenuService {
 
     // 메뉴 수정
     @Transactional
-    public MenuResponseDto updateMenu(AuthUser authUser, Long menuId, MenuUpdateRequestDto dto) {
+    public MenuResponseDto updateMenu(AuthUser authUser, Long menuId, Long storeId, MenuUpdateRequestDto dto) {
         // OWNER 검증
         if(!authUser.getUserRole().equals(UserRole.OWNER)){
             throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
         }
+
+        // Store 검증
+        Store store = storeRepository.findById(storeId).orElseThrow(
+                () -> new RuntimeException("가게가 없습니다.")
+        );
 
         // menu 검증
         Menu menu = menuRepository.findById(menuId).orElseThrow(
@@ -105,6 +129,7 @@ public class MenuService {
         log.info("메뉴 수정 성공");
         return new MenuResponseDto(
                 menu.getId(),
+                store.getId(),
                 menu.getMenuName(),
                 menu.priceToString()
         );
@@ -112,11 +137,16 @@ public class MenuService {
 
     // 메뉴 삭제
     @Transactional
-    public void deleteMenu(AuthUser authUser, Long menuId) {
+    public void deleteMenu(AuthUser authUser, Long menuId, Long storeId) {
         // OWNER 검증
         if(!authUser.getUserRole().equals(UserRole.OWNER)){
             throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
         }
+
+        // Store 검증
+        Store store = storeRepository.findById(storeId).orElseThrow(
+                () -> new RuntimeException("가게가 없습니다.")
+        );
 
         // menu 검증
         Menu menu = menuRepository.findById(menuId).orElseThrow(

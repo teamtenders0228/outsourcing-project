@@ -1,6 +1,7 @@
 package com.example.outsourcingproject.domain.menu.entity;
 
 import com.example.outsourcingproject.common.entity.BaseEntity;
+import com.example.outsourcingproject.domain.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,9 +26,14 @@ public class Menu extends BaseEntity {
     @ColumnDefault("false")
     private boolean deleteFlag;
 
-    public Menu(String menuName, Integer price) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
+
+    public Menu(String menuName, Integer price, Store store) {
         this.menuName = menuName;
         this.price = price;
+        this.store = store;
     }
 
     // 메뉴 menuName만 수정

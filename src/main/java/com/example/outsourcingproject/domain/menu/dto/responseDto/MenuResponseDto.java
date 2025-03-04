@@ -8,12 +8,15 @@ public class MenuResponseDto {
 
     private final Long id;
 
+    private final Long storeId;
+
     private final String menuName;
 
     private final String price;
 
-    public MenuResponseDto(Long id, String menuName, String price) {
+    public MenuResponseDto(Long id, Long storeId, String menuName, String price) {
         this.id = id;
+        this.storeId = storeId;
         this.menuName = menuName;
         this.price = price;
     }
@@ -22,6 +25,7 @@ public class MenuResponseDto {
     public static MenuResponseDto toDto(Menu menu) {
         return new MenuResponseDto(
                 menu.getId(),
+                menu.getStore().getId(),
                 menu.getMenuName(),
                 menu.priceToString()
         );

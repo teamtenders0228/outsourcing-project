@@ -19,6 +19,7 @@ public enum ErrorCode {
     PASSWORD_SAME_AS_OLD("새 비밀번호는 기존 비밀번호와 같을 수 없습니다.", HttpStatus.BAD_REQUEST),
     INACTIVE_USER("이미 탈퇴된 회원입니다.", HttpStatus.BAD_REQUEST),
     //가게 관련 에러 코드
+    INVALID_CATEGORY_TYPE("유효하지 않은 카테고리 이름입니다.", HttpStatus.BAD_REQUEST),
     //메뉴 관련 에러 코드
     NOT_FOUND_MENU("메뉴가 없습니다.", HttpStatus.NOT_FOUND),
     //주문 관련 에러 코드

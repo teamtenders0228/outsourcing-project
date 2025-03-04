@@ -5,7 +5,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -17,8 +16,8 @@ import java.util.Date;
 @Component
 public class JwtUtil {
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final long ACCESS_TOKNE_TIME = 60 * 60 * 1000L;
-    //private static final long REFRESH_TOKNE_TIME = 10 * 60 * 60 * 1000L;
+    private static final long ACCESS_TOKNE_TIME = 3600 * 1000L; // 1 hour
+    //private static final long REFRESH_TOKNE_TIME = 24 * 3600 * 1000L;
 
     @Value("${jwt.secret.accessKey}")
     private String accessKey;
@@ -28,15 +27,11 @@ public class JwtUtil {
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
-    @PostConstruct
-    public void init() {
-        byte[] bytes = Base64.getDecoder().decode(accessKey);
-        key = Keys.hmacShaKeyFor(bytes);
-    }
+
 
     public String createAccessToken(Long userId, String email, UserRole userRole) {
-//        byte[] bytes = Base64.getDecoder().decode(accessKey);
-//        key = Keys.hmacShaKeyFor(bytes);
+        byte[] bytes = Base64.getDecoder().decode(accessKey);
+        key = Keys.hmacShaKeyFor(bytes);
         Date date = new Date();
 
         return BEARER_PREFIX +
@@ -49,6 +44,8 @@ public class JwtUtil {
                         .signWith(key, signatureAlgorithm)
                         .compact();
     }
+
+
 
     public String substringToken(String token){
         if(StringUtils.hasText(token) && token.startsWith(BEARER_PREFIX)) {

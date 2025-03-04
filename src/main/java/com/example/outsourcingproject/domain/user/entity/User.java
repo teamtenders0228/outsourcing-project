@@ -2,8 +2,6 @@ package com.example.outsourcingproject.domain.user.entity;
 
 import com.example.outsourcingproject.common.entity.BaseEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -62,15 +60,14 @@ public class User extends BaseEntity {
         this.password = password;
     }
 
-    public void changeProfile(@NotBlank String name, @NotBlank String phone, @NotBlank String address) {
+    public void changeProfile(String name, String phone, String address) {
         this.name = name;
         this.phone = phone;
         this.address = address;
     }
 
-    public void deleted() {
+    public void deleteUser() {
         this.name = "탈퇴 회원";
-        this.email = "";
         this.password = "";
         this.address = "";
         this.deleteFlag = true;

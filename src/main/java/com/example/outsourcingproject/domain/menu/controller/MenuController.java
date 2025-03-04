@@ -36,16 +36,20 @@ public class MenuController {
     // 메뉴 전체 조회
     @GetMapping("/menus")
     public ResponseEntity<Page<MenuResponseDto>> getAllMenu(
+            @Auth AuthUser authUser,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        return ResponseEntity.ok(menuService.findAllMenu(page, size));
+        return ResponseEntity.ok(menuService.findAllMenu(authUser, page, size));
     }
 
     // 메뉴 단건 조회
     @GetMapping("/menus/{menuId}")
-    public ResponseEntity<MenuResponseDto> getOneMenu(@PathVariable Long menuId) {
-        return ResponseEntity.ok(menuService.findById(menuId));
+    public ResponseEntity<MenuResponseDto> getOneMenu(
+            @Auth AuthUser authUser,
+            @PathVariable Long menuId
+    ) {
+        return ResponseEntity.ok(menuService.findById(authUser, menuId));
     }
 
     // 메뉴 수정

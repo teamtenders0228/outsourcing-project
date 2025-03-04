@@ -45,7 +45,12 @@ public class MenuService {
 
     // 메뉴 전체 조회
     @Transactional(readOnly = true)
-    public Page<MenuResponseDto> findAllMenu(int page, int size) {
+    public Page<MenuResponseDto> findAllMenu(AuthUser authUser, int page, int size) {
+        // OWNER 검증
+        if(!authUser.getUserRole().equals(UserRole.OWNER)){
+            throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
+        }
+
         int adjustPage = (page > 0) ? page - 1 : 0;
         Pageable pageable = PageRequest.of(adjustPage, size, Sort.by("updatedAt").descending());
         Page<Menu> menuPage = menuRepository.findAll(pageable);
@@ -59,7 +64,12 @@ public class MenuService {
 
     // 메뉴 단건 조회
     @Transactional(readOnly = true)
-    public MenuResponseDto findById(Long menuId) {
+    public MenuResponseDto findById(AuthUser authUser, Long menuId) {
+        // OWNER 검증
+        if(!authUser.getUserRole().equals(UserRole.OWNER)){
+            throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
+        }
+
         // menu 검증
         Menu menu = menuRepository.findById(menuId).orElseThrow(
                 () -> new BaseException(ErrorCode.NOT_FOUND_MENU, null)

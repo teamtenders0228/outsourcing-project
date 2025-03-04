@@ -16,6 +16,8 @@ public enum ErrorCode {
     SIGNIN_FAILED("로그인에 실패했습니다.", HttpStatus.BAD_REQUEST),
     PASSWORD_MISMATCH("잘못된 비밀번호입니다.", HttpStatus.UNAUTHORIZED),
     USER_NOT_FOUND("사용자 정보를 찾을 수 없습니다.", HttpStatus.BAD_REQUEST),
+    PASSWORD_SAME_AS_OLD("새 비밀번호는 기존 비밀번호와 같을 수 없습니다.", HttpStatus.BAD_REQUEST),
+    INACTIVE_USER("이미 탈퇴된 회원입니다.", HttpStatus.BAD_REQUEST),
     //가게 관련 에러 코드
     //주문 관련 에러 코드
     //리뷰 관련 에러 코드

@@ -5,12 +5,14 @@ import com.example.outsourcingproject.common.dto.AuthUser;
 import com.example.outsourcingproject.domain.user.entity.UserRole;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+@Slf4j
 public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override

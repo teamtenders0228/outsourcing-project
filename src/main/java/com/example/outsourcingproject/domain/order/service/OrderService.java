@@ -26,6 +26,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.outsourcingproject.common.exception.ErrorCode.MENU_NOT_FOUND;
 import static com.example.outsourcingproject.common.exception.ErrorCode.ORDER_ONLY_FOR_REGULAR_USER;
 import static com.example.outsourcingproject.domain.user.entity.UserRole.USER;
 
@@ -45,8 +46,17 @@ public class OrderService {
         // 일반 유저인지 판별
         if(userRole != UserRole.USER) throw new BaseException(ErrorCode.ORDER_ONLY_FOR_REGULAR_USER, null);
 
-        User findUser = userRepository.findByIdOrElseThrow(userId);
-        Store findStore = storeRepository.findByIdOrElseThrow(storeId);
+        // store 의 menu 가 아닌 경우 예외 처리
+        List<Menu> menuList = menuRepository.findAllByStoreId(storeId);
+        List<Long> menuIdList = new ArrayList<>();
+
+        for(Menu menu : menuList){
+            menuIdList.add(menu.getId());
+        }
+
+        for(OrderSaveRequestDto menu : menus){
+            if(!menuIdList.contains(menu.getMenuId())) throw new BaseException(MENU_NOT_FOUND, null);
+        }
 
         // totalPrice 계산
         Integer totalPrice = 0;
@@ -58,6 +68,9 @@ public class OrderService {
         }
 
         // newOrder 저장
+        User findUser = userRepository.findByIdOrElseThrow(userId);
+        Store findStore = storeRepository.findByIdOrElseThrow(storeId);
+
         Order newOrder = new Order(findUser, findStore, false, Status.PENDING, totalPrice);
 
         Order savedOrder = orderRepository.save(newOrder);
@@ -136,6 +149,10 @@ public class OrderService {
 
     // 사용자별 주문 내역 조회
     public List<UserOrdersResponseDto> findOrdersByUser(Long userId) {
+        // user 가 없는 회원일 경우
+        userRepository.findByIdOrElseThrow(userId);
+
+        // 가격 포맷
         DecimalFormat formatter = new DecimalFormat("###,###");
 
         List<Order> findOrders = orderRepository.findAllByUserId(userId);

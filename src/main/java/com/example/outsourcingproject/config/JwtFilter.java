@@ -1,5 +1,7 @@
 package com.example.outsourcingproject.config;
 
+import com.example.outsourcingproject.common.exception.BaseException;
+import com.example.outsourcingproject.common.exception.ErrorCode;
 import com.example.outsourcingproject.domain.refreshToken.RefreshToken;
 import com.example.outsourcingproject.domain.refreshToken.RefreshTokenRepository;
 import com.example.outsourcingproject.domain.user.entity.UserRole;
@@ -14,6 +16,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Optional;
+
+import static com.example.outsourcingproject.common.exception.ErrorCode.INVALID_REFRESH_TOKEN;
+import static com.example.outsourcingproject.common.exception.ErrorCode.REFRESH_TOKEN_NOT_FOUND;
 
 @Slf4j
 @Component
@@ -61,41 +66,28 @@ public class JwtFilter implements Filter {
             httpRequest.setAttribute("userId", Long.parseLong(claims.getSubject()));
             httpRequest.setAttribute("email", claims.get("email"));
             httpRequest.setAttribute("userRole", claims.get("userRole"));
-
-            if (url.startsWith("/admin")) {
-                if (!UserRole.ADMIN.equals(userRole)) {
-                    httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "관리자 권한이 없습니다.");
-                    return;
-                }
-                chain.doFilter(request, response);
-                return;
-            }
+//
+//            if (url.startsWith("/admin")) {
+//                if (!UserRole.ADMIN.equals(userRole)) {
+//                    httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "관리자 권한이 없습니다.");
+//                    return;
+//                }
+//                chain.doFilter(request, response);
+//                return;
+//            }
 
             chain.doFilter(request, response);
         } catch (ExpiredJwtException e){
             log.info("Access Token이 만료됨. Refresh Token을 이용해 새로운 Access Token 발급");
 
             Long userId = Long.parseLong(e.getClaims().getSubject());
-            log.info("userID: {}",userId);
-
-            Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByUserId(userId);
-            if(optionalRefreshToken.isEmpty()){
-                httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Refresh Token이 존재하지 않습니다. 다시 로그인하세요.");
-                return;
-            }
-
-            String refreshToken = optionalRefreshToken.get().getToken();
 
             try {
-                log.info("여기 try문");
-                jwtUtil.extractClaims(refreshToken, true);
-
-                String newAccessToken = jwtUtil.createAccessToken(userId, "email", UserRole.USER);
-                log.info(newAccessToken);
-
+                String newAccessToken = jwtUtil.refreshAccessToken(userId);
+                httpResponse.setHeader("Authorization",  newAccessToken);
                 chain.doFilter(request, response);
-            } catch (Exception ex) {
-                httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않은 Refresh Token입니다. 다시 로그인하세요.");
+            } catch (BaseException ex) {
+                httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
             }
         }
     }

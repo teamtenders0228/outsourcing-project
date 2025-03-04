@@ -14,17 +14,13 @@ import java.time.LocalDateTime;
 @Table(name = "refresh_tokens")
 public class RefreshToken {
 
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false, unique = true)
-    private Long userId;
+    private Long userId;  // 유저 ID를 PK로 사용
 
     @Column(nullable = false, unique = true)
     private String token;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    public void updateToken(String newToken) {
+        this.token = newToken;
+    }
 }

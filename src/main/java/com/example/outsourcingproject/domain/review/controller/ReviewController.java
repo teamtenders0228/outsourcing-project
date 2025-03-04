@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,10 +27,10 @@ public class ReviewController {
 
     // 리뷰 등록
     @PostMapping("/reviews")
-    public ResponseEntity<ReviewResponseDto> saveReview(
-            @Valid @RequestBody ReviewSaveRequestDto dto){
+    public ResponseEntity<String> saveReview(@Valid @RequestBody ReviewSaveRequestDto dto){
+        reviewService.saveReview(dto);
         log.info("리뷰 생성 성공");
-        return ResponseEntity.ok(reviewService.saveReview(dto));
+        return new ResponseEntity<>("message : 리뷰 등록이 완료되었습니다.",HttpStatus.OK);
     }
 
     // 리뷰 다건 조회 (확인 후 삭제)
@@ -62,17 +63,19 @@ public class ReviewController {
 
     // 리뷰 수정
     @PatchMapping("/reviews/{reviewId}")
-    public ResponseEntity<ReviewResponseDto> updateReview(
+    public ResponseEntity<String> updateReview(
             @PathVariable Long reviewId,
             @Valid @RequestBody ReviewUpdateRequestDto dto
     ){
+        reviewService.updateReview(reviewId, dto);
         log.info("리뷰 수정 성공");
-        return ResponseEntity.ok(reviewService.updateReview(reviewId, dto));
+        return new ResponseEntity<>("message : 리뷰 수정이 완료되었습니다.",HttpStatus.OK);
     }
 
     // 리뷰 삭제
     @DeleteMapping("/reviews/{reviewId}")
-    public void deleteReview(@PathVariable Long reviewId){
+    public ResponseEntity<String> deleteReview(@PathVariable Long reviewId){
         reviewService.deleteReview(reviewId);
+        return new ResponseEntity<>("message : 리뷰 삭제가 완료되었습니다.",HttpStatus.OK);
     }
 }

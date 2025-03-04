@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "user")
+@Table(name = "users")
 @RequiredArgsConstructor
 public class User extends BaseEntity {
 

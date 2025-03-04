@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "menu")
+@Table(name = "menus")
 @NoArgsConstructor
 public class Menu extends BaseEntity {
 

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@Table(name = "store")
+@Table(name = "stores")
 @NoArgsConstructor
 public class Store extends BaseEntity {
 

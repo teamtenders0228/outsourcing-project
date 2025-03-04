@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "order_item")
+@Table(name = "order_items")
 @NoArgsConstructor
 public class OrderItem extends BaseEntity {
 

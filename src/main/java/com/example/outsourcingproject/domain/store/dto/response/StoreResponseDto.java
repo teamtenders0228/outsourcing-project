@@ -1,14 +1,17 @@
 package com.example.outsourcingproject.domain.store.dto.response;
 
 import com.example.outsourcingproject.domain.store.entity.Store;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalTime;
 
 @Getter
+@AllArgsConstructor
 public class StoreResponseDto {
     private Long id;
     private String storeName;
+    private String userName;
     private String address;
     private String phone;
     private String category; // Enum -> String 변환
@@ -16,27 +19,15 @@ public class StoreResponseDto {
     private LocalTime openTime;
     private LocalTime closeTime;
     private Double rating;
-    private boolean closedFlag;
+    //private boolean closedFlag;
+    private String username;
 
-    // 명시적인 생성자 추가
-    public StoreResponseDto(Long id, String storeName, String address, String phone, String category,
-                            Integer minPrice, LocalTime openTime, LocalTime closeTime, Double rating, boolean closedFlag) {
-        this.id = id;
-        this.storeName = storeName;
-        this.address = address;
-        this.phone = phone;
-        this.category = category;
-        this.minPrice = minPrice;
-        this.openTime = openTime;
-        this.closeTime = closeTime;
-        this.rating = rating;
-        this.closedFlag = closedFlag;
-    }
 
-    // 엔티티 → DTO 변환을 위한 정적 메서드
+    // 엔티티 -> DTO 변환을 위한 정적 메서드
     public static StoreResponseDto fromEntity(Store store) {
         return new StoreResponseDto(
                 store.getId(),
+                store.getUser().getName(),
                 store.getStoreName(),
                 store.getAddress(),
                 store.getPhone(),
@@ -45,7 +36,8 @@ public class StoreResponseDto {
                 store.getOpenTime(),
                 store.getCloseTime(),
                 store.getRating(),
-                store.isClosedFlag()
+      //          store.isClosedFlag(),
+                store.getUser().getName()
         );
     }
 }

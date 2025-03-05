@@ -180,7 +180,7 @@ public class OrderService {
                 Menu findMenu = menuRepository.findByIdOrElseThrow(findOrderItem.getMenu().getId());
 
                 MenuResponseDto menuResponseDto = new MenuResponseDto(
-                        findMenu.getName(),
+                        findMenu.getMenuName(),
                         formatter.format(findMenu.getPrice()),
                         findOrderItem.getCount()
                 );
@@ -194,9 +194,9 @@ public class OrderService {
             Store findStore = storeRepository.findByIdOrElseThrow(findOrder.getStore().getId());
 
             UserOrdersResponseDto dto = new UserOrdersResponseDto(
-                    findStore.getName(),
+                    findStore.getStoreName(),
                     menuResponseDtoList,
-                    findStore.getCategory(),
+                    findStore.getCategory().name(),
                     findOrder.getStatus(),
                     formatter.format(totalPrice)
             );

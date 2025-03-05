@@ -51,7 +51,6 @@ public class AuthService {
     }
 
     public SigninResponseDto signin(@Valid SigninRequestDto signinRequestDto) {
-
         User user = userRepository.findByEmail(signinRequestDto.getEmail()).orElseThrow(
                 () -> new BaseException(USER_NOT_EXIST, null));
 

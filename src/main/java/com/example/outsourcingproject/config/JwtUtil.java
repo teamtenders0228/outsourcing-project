@@ -1,5 +1,10 @@
 package com.example.outsourcingproject.config;
 
+import com.example.outsourcingproject.domain.user.entity.UserRole;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import com.example.outsourcingproject.common.exception.BaseException;
 import com.example.outsourcingproject.common.exception.ErrorCode;
 import com.example.outsourcingproject.domain.auth.dto.SigninResponseDto;
@@ -109,7 +114,6 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
     }
-
     public String refreshAccessToken(Long userId) {
         RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId)
                 .orElseThrow(() -> new BaseException(REFRESH_TOKEN_NOT_FOUND, null));

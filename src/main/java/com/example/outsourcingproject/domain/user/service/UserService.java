@@ -28,12 +28,7 @@ public class UserService {
 
     @Transactional
     public void changePassword(Long id, ChangePasswordRequestDto requestDto) {
-        log.info("Service, id= {}", id);
         User user = userRepository.findById(id).orElseThrow(() -> new BaseException(USER_NOT_FOUND, null));
-
-        log.info(user.getName());
-        log.info("old:{}, new: {}", requestDto.getOldPassword(), requestDto.getNewPassword());
-
         if(user.getDeleteFlag()){ throw new BaseException(INACTIVE_USER, null); }
         if(!passwordEncoder.matches(requestDto.getOldPassword(), user.getPassword())) {
             throw new BaseException(PASSWORD_MISMATCH, null);

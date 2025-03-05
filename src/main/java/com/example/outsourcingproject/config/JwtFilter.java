@@ -1,5 +1,10 @@
 package com.example.outsourcingproject.config;
 
+import com.example.outsourcingproject.domain.user.entity.UserRole;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import com.example.outsourcingproject.common.exception.BaseException;
 import com.example.outsourcingproject.domain.auth.dto.SigninResponseDto;
 import com.example.outsourcingproject.domain.user.entity.UserRole;
@@ -11,6 +16,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.Set;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -53,26 +62,14 @@ public class JwtFilter implements Filter {
 
         try {
             Claims claims = jwtUtil.extractClaims(jwt, false);
-
             if (claims == null) {
                 httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "잘못된 JWT 토큰입니다.");
                 return;
             }
 
-            //UserRole userRole = UserRole.of(claims.get("userRole", String.class));
-
             httpRequest.setAttribute("userId", Long.parseLong(claims.getSubject()));
             httpRequest.setAttribute("email", claims.get("email"));
             httpRequest.setAttribute("userRole", claims.get("userRole"));
-//
-//            if (url.startsWith("/admin")) {
-//                if (!UserRole.ADMIN.equals(userRole)) {
-//                    httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "관리자 권한이 없습니다.");
-//                    return;
-//                }
-//                chain.doFilter(request, response);
-//                return;
-//            }
 
             chain.doFilter(request, response);
         } catch (ExpiredJwtException e){

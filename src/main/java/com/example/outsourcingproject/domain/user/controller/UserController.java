@@ -29,7 +29,6 @@ public class UserController {
     @PatchMapping("/me/changePassword")
     public ResponseEntity<String> changePassword(@Auth AuthUser authUser,
                                           @Valid @RequestBody ChangePasswordRequestDto requestDto) {
-        log.info("controller 진입");
         userService.changePassword(authUser.getId(), requestDto);
         return new ResponseEntity<>("비밀번호가 변경되었습니다.", HttpStatus.OK);
     }

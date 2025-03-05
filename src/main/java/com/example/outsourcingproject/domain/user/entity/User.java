@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "user")
+@Table(name = "users")
 @RequiredArgsConstructor
 public class User extends BaseEntity {
 
@@ -33,7 +33,8 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
-    private Boolean deleteFlag;
+    @Column(nullable = false)
+    private Boolean deleteFlag = false;
 
     public User(String name, String email, String password,
                 String phone, String address, UserRole userRole) {
@@ -43,17 +44,6 @@ public class User extends BaseEntity {
         this.phone = phone;
         this.address = address;
         this.userRole = userRole;
-    }
-
-    public User(Long id, String name, String email, String password, String phone, String address, UserRole userRole, Boolean deleteFlag) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.phone = phone;
-        this.address = address;
-        this.userRole = userRole;
-        this.deleteFlag = deleteFlag;
     }
 
     public void changePassword(String password) {

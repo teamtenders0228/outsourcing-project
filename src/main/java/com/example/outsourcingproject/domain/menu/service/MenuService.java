@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -37,8 +38,13 @@ public class MenuService {
 
         // Store 검증
         Store store = storeRepository.findById(storeId).orElseThrow(
-                () -> new RuntimeException("가게가 없습니다.")
+                () -> new BaseException(ErrorCode.STORE_NOT_FOUND, null)
         );
+
+        // userId 검증
+        if (!Objects.equals(authUser.getId(), store.getUser().getId())){
+            throw new BaseException(ErrorCode.USERID_NOT_MATCH, null);
+        }
 
         Menu menu = new Menu(dto.getMenuName(), dto.getPrice(), store);
         menuRepository.save(menu);
@@ -61,7 +67,7 @@ public class MenuService {
 
         // Store 검증
         Store store = storeRepository.findById(storeId).orElseThrow(
-                () -> new RuntimeException("가게가 없습니다.")
+                () -> new BaseException(ErrorCode.STORE_NOT_FOUND, null)
         );
 
         int adjustPage = (page > 0) ? page - 1 : 0;
@@ -85,7 +91,7 @@ public class MenuService {
 
         // Store 검증
         Store store = storeRepository.findById(storeId).orElseThrow(
-                () -> new RuntimeException("가게가 없습니다.")
+                () -> new BaseException(ErrorCode.STORE_NOT_FOUND, null)
         );
 
         // menu 검증
@@ -110,8 +116,13 @@ public class MenuService {
 
         // Store 검증
         Store store = storeRepository.findById(storeId).orElseThrow(
-                () -> new RuntimeException("가게가 없습니다.")
+                () -> new BaseException(ErrorCode.STORE_NOT_FOUND, null)
         );
+
+        // userId 검증
+        if (!Objects.equals(authUser.getId(), store.getUser().getId())){
+            throw new BaseException(ErrorCode.USERID_NOT_MATCH, null);
+        }
 
         // menu 검증
         Menu menu = menuRepository.findById(menuId).orElseThrow(
@@ -145,8 +156,13 @@ public class MenuService {
 
         // Store 검증
         Store store = storeRepository.findById(storeId).orElseThrow(
-                () -> new RuntimeException("가게가 없습니다.")
+                () -> new BaseException(ErrorCode.STORE_NOT_FOUND, null)
         );
+
+        // userId 검증
+        if (!Objects.equals(authUser.getId(), store.getUser().getId())){
+            throw new BaseException(ErrorCode.USERID_NOT_MATCH, null);
+        }
 
         // menu 검증
         Menu menu = menuRepository.findById(menuId).orElseThrow(

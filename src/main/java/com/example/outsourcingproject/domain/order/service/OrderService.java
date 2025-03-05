@@ -109,42 +109,50 @@ public class OrderService {
         findOrder.setAccepted(false);
     }
 
-    // 주문 상태 변경 - (가게사장님 만 가능)
+    // 주문 상태 변경 - (가게사장님 만 가능)(거절 외 순차적으로 변경)
     @Transactional
-    public OrderStatusResponseDto statusChange(UserRole userRole, Long orderId, Status status) {
+    public OrderStatusResponseDto updateProgressStatus(UserRole userRole, Long orderId) {
         // 가게 사장인지 판별
         if(userRole != UserRole.OWNER) throw new BaseException(ErrorCode.ORDER_STATUS_ONLY_FOR_OWNER, null);
 
         Order findOrder = orderRepository.findByIdOrElseThrow(orderId);
 
-        Boolean accepted = true;
         String message = "";
 
-        if(status.equals(status.PENDING)){
-            accepted = false;
-            message = "주문이 접수되었습니다.";
-        }
-        if(status.equals(status.ACCEPT)){
+        if(findOrder.getStatus().equals(Status.PENDING)){
+            findOrder.setStatus(Status.ACCEPT);
             message = "주문이 수락되었습니다.";
         }
-        if(status.equals(status.COOKING)){
-            message = "음식이 조리 중입니다. ";
+        else if(findOrder.getStatus().equals(Status.ACCEPT)){
+            findOrder.setStatus(Status.COOKING);
+            message = "음식이 조리 중입니다.";
         }
-        if(status.equals(status.DELIVERY)){
+        else if(findOrder.getStatus().equals(Status.COOKING)){
+            findOrder.setStatus(Status.DELIVERY);
             message = "배달이 시작되었습니다.";
         }
-        if(status.equals(status.COMPLETE)){
+        else if(findOrder.getStatus().equals(Status.DELIVERY)){
+            findOrder.setStatus(Status.COMPLETE);
             message = "배달이 완료되었습니다.";
         }
-        if(status.equals(status.REJECT)){
-            accepted = false;
-            message = "주문이 거절되었습니다. 불편을 드려 죄송합니다.";
+        else if(findOrder.getStatus().equals(Status.COMPLETE)){
+            message = "상태를 변경할 수 없습니다.";
         }
 
-        findOrder.setStatus(status);
-        findOrder.setAccepted(accepted);
+        findOrder.setAccepted(true);
 
         return new OrderStatusResponseDto(message);
+    }
+
+    // 주문 상태 변경 - (가게사장님 만 가능)(거절)
+    @Transactional
+    public void statusChangeReject(UserRole userRole, Long orderId) {
+        // 가게 사장인지 판별
+        if(userRole != UserRole.OWNER) throw new BaseException(ErrorCode.ORDER_STATUS_ONLY_FOR_OWNER, null);
+
+        Order findOrder = orderRepository.findByIdOrElseThrow(orderId);
+
+        findOrder.setStatus(Status.REJECT);
     }
 
     // 사용자별 주문 내역 조회

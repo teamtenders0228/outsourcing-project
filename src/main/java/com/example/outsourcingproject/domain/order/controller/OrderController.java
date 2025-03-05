@@ -57,16 +57,26 @@ public class OrderController {
         return new ResponseEntity<>("주문이 거절되었습니다. 불편을 드려 죄송합니다.", HttpStatus.OK);
     }
 
-    // 주문 상태 변경 - (가게사장님 만 가능)
-    @PatchMapping("/status/{orderId}")
-    public ResponseEntity<OrderStatusResponseDto> statusChange(
+    // 주문 상태 변경 - (가게사장님 만 가능)(거절 외 순차적으로 변경)
+    @PatchMapping("/status/progress/{orderId}")
+    public ResponseEntity<OrderStatusResponseDto> updateProgressStatus(
             @Auth AuthUser authUser,
-            @PathVariable Long orderId,
-            @RequestBody OrderStatusRequestDto requestDto
+            @PathVariable Long orderId
     ){
-        OrderStatusResponseDto responseDto = orderService.statusChange(authUser.getUserRole(), orderId, requestDto.getStatus());
+        OrderStatusResponseDto responseDto = orderService.updateProgressStatus(authUser.getUserRole(), orderId);
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    // 주문 상태 변경 - (가게사장님 만 가능)(거절)
+    @PatchMapping("/status/reject/{orderId}")
+    public ResponseEntity<String> statusChangeReject(
+            @Auth AuthUser authUser,
+            @PathVariable Long orderId
+    ){
+        orderService.statusChangeReject(authUser.getUserRole(), orderId);
+
+        return new ResponseEntity<>("주문이 거절되었습니다.", HttpStatus.OK);
     }
 
     // 사용자별 주문 내역 조회

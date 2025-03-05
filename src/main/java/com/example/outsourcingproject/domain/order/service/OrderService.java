@@ -7,7 +7,7 @@ import com.example.outsourcingproject.domain.order.dto.response.*;
 import com.example.outsourcingproject.domain.user.entity.User;
 import com.example.outsourcingproject.domain.user.entity.UserRole;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
-import com.example.outsourcingproject.domain.menu.dto.response.MenuResponseDto;
+import com.example.outsourcingproject.domain.menu.dto.response.MenuOrderResponseDto;
 import com.example.outsourcingproject.domain.menu.entity.Menu;
 import com.example.outsourcingproject.domain.menu.repository.MenuRepository;
 import com.example.outsourcingproject.domain.order.dto.request.OrderSaveRequestDto;
@@ -28,8 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.outsourcingproject.common.exception.ErrorCode.MENU_NOT_FOUND;
-import static com.example.outsourcingproject.common.exception.ErrorCode.ORDER_ONLY_FOR_REGULAR_USER;
-import static com.example.outsourcingproject.domain.user.entity.UserRole.USER;
 
 @Service
 @RequiredArgsConstructor
@@ -181,7 +179,7 @@ public class OrderService {
         for(Order findOrder : findOrders){
 
             // menuResponseDtoList
-            List<MenuResponseDto> menuResponseDtoList = new ArrayList<>();
+            List<MenuOrderResponseDto> menuResponseDtoList = new ArrayList<>();
 
             List<OrderItem> findOrderItems = orderItemRepository.findAllByOrderId(findOrder.getId());
 
@@ -190,7 +188,7 @@ public class OrderService {
             for(OrderItem findOrderItem : findOrderItems){
                 Menu findMenu = menuRepository.findByIdOrElseThrow(findOrderItem.getMenu().getId());
 
-                MenuResponseDto menuResponseDto = new MenuResponseDto(
+                MenuOrderResponseDto menuResponseDto = new MenuOrderResponseDto(
                         findMenu.getMenuName(),
                         formatter.format(findMenu.getPrice()),
                         findOrderItem.getCount()

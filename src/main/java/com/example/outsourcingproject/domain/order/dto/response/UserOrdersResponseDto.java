@@ -1,7 +1,7 @@
 package com.example.outsourcingproject.domain.order.dto.response;
 
 import com.example.outsourcingproject.domain.order.enums.Status;
-import com.example.outsourcingproject.domain.menu.dto.response.MenuResponseDto;
+import com.example.outsourcingproject.domain.menu.dto.response.MenuOrderResponseDto;
 import lombok.Getter;
 
 import java.util.List;
@@ -11,7 +11,7 @@ public class UserOrdersResponseDto {
 
     private final String storeName;
 
-    private final List<MenuResponseDto> menu;
+    private final List<MenuOrderResponseDto> menu;
 
     private final String category;
 
@@ -19,7 +19,7 @@ public class UserOrdersResponseDto {
 
     private final String totalPrice;
 
-    public UserOrdersResponseDto(String storeName, List<MenuResponseDto> menu, String category, Status status, String totalPrice) {
+    public UserOrdersResponseDto(String storeName, List<MenuOrderResponseDto> menu, String category, Status status, String totalPrice) {
         this.storeName = storeName;
         this.menu = menu;
         this.category = category;

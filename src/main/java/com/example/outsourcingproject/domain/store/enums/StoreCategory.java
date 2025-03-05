@@ -15,3 +15,4 @@ public enum StoreCategory {
                 .orElseThrow(() -> new BaseException(ErrorCode.INVALID_CATEGORY_TYPE, category));
     }
 }
+

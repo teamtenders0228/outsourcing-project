@@ -2,9 +2,12 @@ package com.example.outsourcingproject.domain.store.entity;
 
 import com.example.outsourcingproject.common.entity.BaseEntity;
 import com.example.outsourcingproject.domain.store.enums.StoreCategory;
+import com.example.outsourcingproject.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Time;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -47,6 +50,30 @@ public class Store extends BaseEntity {
     @Column(nullable = false)
     private boolean closedFlag;
 
-    //유저 이름 컬럼 추가 필요
+    private LocalDateTime deleteAt;
 
+    //유저 이름 컬럼 추가 필요
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id",nullable = false)
+    private User user;
+
+    public void updateStore(String storeName, String address, String phone, StoreCategory category,
+                     Integer minPrice, LocalTime openTime, LocalTime closeTime){
+        this.storeName = storeName;
+        this.address = address;
+        this.phone = phone;
+        this.category = category;
+        this.minPrice = minPrice;
+        this.openTime = openTime;
+        this.closeTime = closeTime;
+    }
+    public void deleteStore() {
+        this.closedFlag = false;
+        this.deleteAt = LocalDateTime.now();
+    }
+
+    // 영업 시작, 종료 토글
+   public void toggleStoreStatus() {
+        this.closedFlag = !this.closedFlag;
+   }
 }

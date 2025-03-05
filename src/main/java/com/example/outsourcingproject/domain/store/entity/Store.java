@@ -57,8 +57,12 @@ public class Store extends BaseEntity {
     @JoinColumn(name = "user_id",nullable = false)
     private User user;
 
-    public void updateStore(String storeName, String address, String phone, StoreCategory category,
-                     Integer minPrice, LocalTime openTime, LocalTime closeTime){
+    public void updateStore(
+            String storeName, String address,
+            String phone, StoreCategory category,
+            Integer minPrice, LocalTime openTime,
+            LocalTime closeTime
+    ){
         this.storeName = storeName;
         this.address = address;
         this.phone = phone;
@@ -67,6 +71,7 @@ public class Store extends BaseEntity {
         this.openTime = openTime;
         this.closeTime = closeTime;
     }
+
     public void deleteStore() {
         this.closedFlag = false;
         this.deleteAt = LocalDateTime.now();

@@ -6,7 +6,7 @@ import com.example.outsourcingproject.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Time;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -76,4 +76,8 @@ public class Store extends BaseEntity {
    public void toggleStoreStatus() {
         this.closedFlag = !this.closedFlag;
    }
+
+    public void updateRate(Double rating) {
+        this.rating = rating;
+    }
 }

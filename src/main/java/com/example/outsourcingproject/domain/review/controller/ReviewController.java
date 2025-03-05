@@ -22,45 +22,45 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/reviews")
 public class ReviewController {
 
     private final ReviewService reviewService;
 
     // 리뷰 등록
-    @PostMapping("/reviews")
+    @PostMapping("/{orderId}")
     public ResponseEntity<String> saveReview(
             @Auth AuthUser authUser,
+            @PathVariable Long orderId,
             @Valid @RequestBody ReviewSaveRequestDto dto){
-        reviewService.saveReview(authUser, dto);
-        log.info("리뷰 생성 성공");
+        reviewService.saveReview(authUser, orderId, dto);
+
         return new ResponseEntity<>("message : 리뷰 등록이 완료되었습니다.",HttpStatus.OK);
     }
 
-    // 리뷰 조회 (최신순)
-    @GetMapping("/reviews/sorted-by-createdDate")
-    public ResponseEntity<Page<ReviewResponseDto>> getReriewsSortedByCreateAt(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
-    ){
-        log.info("생성일 기준 리뷰 전체 조회");
-        return ResponseEntity.ok(reviewService.findReriewsSortedByCreateAt(page, size));
+    // 리뷰 조회
+    // 1. store 조회
+    @GetMapping("/stores/{storeId}")
+    public ResponseEntity<Page<ReviewResponseDto>> getReviewsByStore(@PathVariable Long storeId,
+                                                                     @RequestParam(defaultValue = "1") int page,
+                                                                     @RequestParam(defaultValue = "10")int size){
+
+        log.info("storedId : {}", storeId);
+        log.info("review~~~~");
+        return ResponseEntity.ok(reviewService.findReviewsByStoreId(storeId, page, size));
     }
 
-    // 리뷰 조회 (별점범위)
-    @GetMapping("/reviews/sorted-by-rate")
-    public ResponseEntity<Page<ReviewResponseDto>> getReriewsSortedByRateRange(
-            @Param("minRate") int minRate,
-            @Param("maxRate") int maxRate,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
-    ){
-        log.info("별점범위 리뷰조회");
-        return ResponseEntity.ok(reviewService.findReriewsSortedByRateRange(minRate, maxRate, page, size));
+
+    // 2. user(사용자) 조회
+    @GetMapping("/myreviews")
+    public ResponseEntity<Page<ReviewResponseDto>> getReviewsByUser(@Auth AuthUser authUser,
+                                                                    @RequestParam(defaultValue = "1") int page,
+                                                                    @RequestParam(defaultValue = "10")int size) {
+        return ResponseEntity.ok(reviewService.findReviewsByUserId(authUser, page, size));
     }
 
     // 리뷰 수정
-    @PatchMapping("/reviews/{reviewId}")
+    @PatchMapping("/{reviewId}")
     public ResponseEntity<String> updateReview(
             @Auth AuthUser authUser,
             @PathVariable Long reviewId,
@@ -72,7 +72,7 @@ public class ReviewController {
     }
 
     // 리뷰 삭제
-    @DeleteMapping("/reviews/{reviewId}")
+    @DeleteMapping("/{reviewId}")
     public ResponseEntity<String> deleteReview(
             @Auth AuthUser authUser,
             @PathVariable Long reviewId

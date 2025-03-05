@@ -26,7 +26,8 @@ public enum ErrorCode {
     EXCEED_STORE_LIMIT("최대 3개 까지의 가게를 등록할 수 있습니다.",HttpStatus.BAD_REQUEST),
     STORE_NOT_FOUND("가게 정보를 찾을 수 없습니다.",HttpStatus.NOT_FOUND),
     UNAUTHORIZED_STORE_ACCESS("본인의 가게가 아닙니다.",HttpStatus.BAD_REQUEST),
-  
+    //메뉴 관련 에러 코드
+    NOT_FOUND_MENU("메뉴가 없습니다.", HttpStatus.NOT_FOUND),
     //주문 관련 에러 코드
     ORDER_ONLY_FOR_REGULAR_USER("주문은 일반 회원만 이용할 수 있습니다.", HttpStatus.UNAUTHORIZED),
     ORDER_ACCEPT_ONLY_FOR_OWNER("주문 수락은 가게 사장님만 가능합니다.", HttpStatus.UNAUTHORIZED),

@@ -22,9 +22,9 @@ public enum ErrorCode {
     STORE_NOT_FOUND("가게 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     //주문 관련 에러 코드
     ORDER_ONLY_FOR_REGULAR_USER("주문은 일반 회원만 이용할 수 있습니다.", HttpStatus.UNAUTHORIZED),
-    ORDER_ACCEPT_ONLY_FOR_OWNER("주문 수락은 사장님만 가능합니다.", HttpStatus.UNAUTHORIZED),
-    ORDER_REJECT_ONLY_FOR_OWNER("주문 거절은 사장님만 가능합니다.", HttpStatus.UNAUTHORIZED),
-    ORDER_STATUS_ONLY_FOR_OWNER("주문 상태 변경은 사장님만 가능합니다.", HttpStatus.UNAUTHORIZED),
+    ORDER_ACCEPT_ONLY_FOR_OWNER("주문 수락은 가게 사장님만 가능합니다.", HttpStatus.UNAUTHORIZED),
+    ORDER_REJECT_ONLY_FOR_OWNER("주문 거절은 가게 사장님만 가능합니다.", HttpStatus.UNAUTHORIZED),
+    ORDER_STATUS_ONLY_FOR_OWNER("주문 상태 변경은 가게 사장님만 가능합니다.", HttpStatus.UNAUTHORIZED),
     ORDER_NOT_FOUND("주문 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     // 메뉴 관련 에러 코드
     MENU_NOT_FOUND("메뉴 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),

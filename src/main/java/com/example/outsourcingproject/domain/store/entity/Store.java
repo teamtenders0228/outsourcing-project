@@ -1,6 +1,7 @@
 package com.example.outsourcingproject.domain.store.entity;
 
 import com.example.outsourcingproject.common.entity.BaseEntity;
+import com.example.outsourcingproject.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,7 +35,11 @@ public class Store extends BaseEntity {
 
     private boolean closedFlag;
 
-    public Store(String name, String address, String phone, String category, String openTime, String closeTime, BigDecimal rating, boolean closedFlag){
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "users_id", nullable = false)
+    private User user;
+
+    public Store(String name, String address, String phone, String category, String openTime, String closeTime, BigDecimal rating, boolean closedFlag, User user){
         this.name = name;
         this.address = address;
         this.phone = phone;
@@ -43,5 +48,6 @@ public class Store extends BaseEntity {
         this.closeTime = closeTime;
         this.rating = rating;
         this.closedFlag = closedFlag;
+        this.user = user;
     }
 }

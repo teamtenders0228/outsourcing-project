@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -18,4 +19,6 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     default Store findByIdOrElseThrow(Long id){
         return findById(id).orElseThrow(() -> new BaseException(ErrorCode.STORE_NOT_FOUND, null));
     }
+
+    List<Store> findByUser_Id(Long userId);
 }

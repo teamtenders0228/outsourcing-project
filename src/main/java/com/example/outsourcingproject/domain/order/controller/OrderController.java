@@ -41,20 +41,9 @@ public class OrderController {
             @Auth AuthUser authUser,
             @PathVariable Long orderId
     ){
-        orderService.orderAccept(authUser.getUserRole(), orderId);
+        orderService.orderAccept(authUser.getId(), orderId);
 
         return new ResponseEntity<>("주문이 수락되었습니다.", HttpStatus.OK);
-    }
-
-    // 취소(거절) - (가게사장님 만 가능)
-    @PatchMapping("/reject/{orderId}")
-    public ResponseEntity<String> orderReject(
-            @Auth AuthUser authUser,
-            @PathVariable Long orderId
-    ){
-        orderService.orderReject(authUser.getUserRole(), orderId);
-
-        return new ResponseEntity<>("주문이 거절되었습니다. 불편을 드려 죄송합니다.", HttpStatus.OK);
     }
 
     // 주문 상태 변경 - (가게사장님 만 가능)(거절 외 순차적으로 변경)
@@ -63,7 +52,7 @@ public class OrderController {
             @Auth AuthUser authUser,
             @PathVariable Long orderId
     ){
-        OrderStatusResponseDto responseDto = orderService.updateProgressStatus(authUser.getUserRole(), orderId);
+        OrderStatusResponseDto responseDto = orderService.updateProgressStatus(authUser.getId(), orderId);
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
@@ -74,7 +63,7 @@ public class OrderController {
             @Auth AuthUser authUser,
             @PathVariable Long orderId
     ){
-        orderService.statusChangeReject(authUser.getUserRole(), orderId);
+        orderService.statusChangeReject(authUser.getId(), orderId);
 
         return new ResponseEntity<>("주문이 거절되었습니다.", HttpStatus.OK);
     }

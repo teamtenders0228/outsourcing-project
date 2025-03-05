@@ -13,7 +13,7 @@ import com.example.outsourcingproject.domain.review.entity.Review;
 import com.example.outsourcingproject.domain.review.repository.ReviewRepository;
 import com.example.outsourcingproject.domain.store.entity.Store;
 import com.example.outsourcingproject.domain.store.repository.StoreRepository;
-import com.example.outsourcingproject.domain.store.service.StoreService;
+import com.example.outsourcingproject.domain.store.service.StoreOwnerService;
 import com.example.outsourcingproject.domain.user.entity.UserRole;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ import java.util.List;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
-    private final StoreService storeService;
+    private final StoreOwnerService storeOwnerService;
     private final OrderRepository orderRepository;
 
     // 리뷰 등록
@@ -56,7 +56,7 @@ public class ReviewService {
         reviewRepository.save(review);
 
         // 가게 평점 update
-        storeService.updateRating(order.getStore().getId());
+        storeOwnerService.updateRating(order.getStore().getId());
 
         return new ReviewResponseDto(
                 review.getId(),
@@ -106,7 +106,7 @@ public class ReviewService {
         review.updateComments(dto.getComments(), dto.getRate());
 
         // 가게 평점 업데이트
-        storeService.updateRating(review.getOrder().getStore().getId());
+        storeOwnerService.updateRating(review.getOrder().getStore().getId());
 
         return new ReviewResponseDto(
                 review.getId(),
@@ -128,6 +128,6 @@ public class ReviewService {
         reviewRepository.delete(review);
 
         // 가게 평점 업데이트
-        storeService.updateRating(review.getOrder().getStore().getId());
+        storeOwnerService.updateRating(review.getOrder().getStore().getId());
     }
 }

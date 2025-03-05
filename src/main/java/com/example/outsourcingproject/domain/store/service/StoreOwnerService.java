@@ -3,6 +3,8 @@ package com.example.outsourcingproject.domain.store.service;
 import com.example.outsourcingproject.common.encoder.PasswordEncoder;
 import com.example.outsourcingproject.common.exception.BaseException;
 import com.example.outsourcingproject.common.exception.ErrorCode;
+import com.example.outsourcingproject.domain.menu.entity.Menu;
+import com.example.outsourcingproject.domain.menu.repository.MenuRepository;
 import com.example.outsourcingproject.domain.review.entity.Review;
 import com.example.outsourcingproject.domain.review.repository.ReviewRepository;
 import com.example.outsourcingproject.domain.store.dto.request.StoreCreateRequestDto;
@@ -29,9 +31,10 @@ import static com.example.outsourcingproject.common.exception.ErrorCode.USER_NOT
 
 @Service
 @RequiredArgsConstructor
-public class StoreService {
+public class StoreOwnerService {
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
+    private final MenuRepository menuRepository;
     private final PasswordEncoder passwordEncoder;
     private final ReviewRepository reviewRepository;
 
@@ -72,9 +75,9 @@ public class StoreService {
     }
 
     @Transactional(readOnly = true)
-    public List<StoreResponseDto> getAllStores() {
+    public List<StoreResponseDto> getAllStores(Long authUserId) {
         // closedFlag가 true인 경우만 조회
-        List<Store> stores = storeRepository.findAllOpenStores();
+        List<Store> stores = storeRepository.findAllByUserId(authUserId);
         return stores.stream()
                 .map(StoreResponseDto::fromEntity)
                 .collect(Collectors.toList());
@@ -82,20 +85,12 @@ public class StoreService {
 
     @Transactional(readOnly = true)
     public StoreResponseDto getStoreById(Long storeId, Long authUserId) {
-        userRepository.findById(authUserId)
-                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND, null));
+//        userRepository.findById(authUserId)
+//                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND, null));
 
-        Store store = storeRepository.getStoreById(storeId)
+        Store store = storeRepository.findByIdAndUserId(storeId, authUserId)
                 .orElseThrow(() -> new BaseException(ErrorCode.STORE_NOT_FOUND, null));
-
-        // 폐업한 가게(closedFlag = false)는 점주만 조회 가능
-        if (!store.isClosedFlag()) {
-
-            if (!store.getUser().getId().equals(authUserId)) {
-                throw new BaseException(ErrorCode.UNAUTHORIZED_STORE_ACCESS, null);
-            }
-        }
-
+        List<Menu> menus = menuRepository.findAllByStoreId(storeId);
         return StoreResponseDto.fromEntity(store);
     }
 
@@ -130,13 +125,13 @@ public class StoreService {
 
         // DTO에서 null이 아닌 값만 기존 필드 값으로 대체
         store.updateStore(
-                dto.getStoreName() != null ? dto.getStoreName() : store.getStoreName(),
-                dto.getAddress() != null ? dto.getAddress() : store.getAddress(),
-                dto.getPhone() != null ? dto.getPhone() : store.getPhone(),
-                dto.getCategory() != null ? dto.getCategory() : store.getCategory(),
-                dto.getMinPrice() != null ? dto.getMinPrice() : store.getMinPrice(),
-                dto.getOpenTime() != null ? dto.getOpenTime() : store.getOpenTime(),
-                dto.getCloseTime() != null ? dto.getCloseTime() : store.getCloseTime()
+                dto.getStoreName(),
+                dto.getAddress(),
+                dto.getPhone(),
+                dto.getCategory(),
+                dto.getMinPrice(),
+                dto.getOpenTime(),
+                dto.getCloseTime()
         );
 
         return StoreResponseDto.fromEntity(store);
@@ -181,6 +176,14 @@ public class StoreService {
 
         if(user.getUserRole() != UserRole.OWNER){
             throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
+        }
+
+        if (!store.getUser().getId().equals(authUserId)) {
+            throw new BaseException(ErrorCode.UNAUTHORIZED_STORE_ACCESS, null);
+        }
+
+        if (store.getDeleteAt() != null) {
+            throw new BaseException(ErrorCode.CANNOT_MODIFY_DELETED_STORE, null);
         }
 
         store.toggleStoreStatus();

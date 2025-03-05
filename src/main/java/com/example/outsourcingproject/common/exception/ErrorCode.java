@@ -27,6 +27,7 @@ public enum ErrorCode {
     EXCEED_STORE_LIMIT("최대 3개 까지의 가게를 등록할 수 있습니다.",HttpStatus.BAD_REQUEST),
     STORE_NOT_FOUND("가게 정보를 찾을 수 없습니다.",HttpStatus.NOT_FOUND),
     UNAUTHORIZED_STORE_ACCESS("본인의 가게가 아닙니다.",HttpStatus.BAD_REQUEST),
+    CANNOT_MODIFY_DELETED_STORE("폐업한 가게는 영업이 불가능합니다.",HttpStatus.BAD_REQUEST),
     //메뉴 관련 에러 코드
     NOT_FOUND_MENU("메뉴가 없습니다.", HttpStatus.NOT_FOUND),
     //주문 관련 에러 코드

@@ -6,10 +6,9 @@ import com.example.outsourcingproject.domain.store.dto.request.StoreCreateReques
 import com.example.outsourcingproject.domain.store.dto.request.StoreDeleteRequestDto;
 import com.example.outsourcingproject.domain.store.dto.request.StoreUpdateRequestDto;
 import com.example.outsourcingproject.domain.store.dto.response.StoreResponseDto;
-import com.example.outsourcingproject.domain.store.service.StoreService;
+import com.example.outsourcingproject.domain.store.service.StoreOwnerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,39 +16,39 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/stores")
+@RequestMapping("/api/v1/owner/stores")
 @RequiredArgsConstructor
-public class StoreController {
-    private final StoreService storeService;
+public class StoreOwnerController {
+    private final StoreOwnerService storeOwnerService;
 
     @PostMapping
     public ResponseEntity<String>createStore(
             @Auth AuthUser authUser,
             @Valid @RequestBody StoreCreateRequestDto dto
     ){
-        storeService.createStore(authUser.getId(),dto);
+        storeOwnerService.createStore(authUser.getId(),dto);
         return new ResponseEntity<>("가게 등록에 성공 했습니다.", HttpStatus.CREATED);
     }
 
     @GetMapping
-    public List<StoreResponseDto> getAllStores(){
-      return storeService.getAllStores();
+    public List<StoreResponseDto> getAllStores(@Auth AuthUser authUser){
+      return storeOwnerService.getAllStores(authUser.getId());
     }
 
     @GetMapping("/{storeId}")
     public StoreResponseDto getStoreById(
             @PathVariable Long storeId,
             @Auth AuthUser authUser) {
-        return storeService.getStoreById(authUser.getId(), storeId);
+        return storeOwnerService.getStoreById(storeId, authUser.getId());
     }
 
     @PatchMapping("/{storeId}")
     public ResponseEntity<String>updateStore(
             @Auth AuthUser authUser,
             @PathVariable Long storeId,
-            @RequestBody StoreUpdateRequestDto dto
+            @Valid @RequestBody StoreUpdateRequestDto dto
     ){
-        storeService.updateStore(authUser.getId(), storeId, dto);
+        storeOwnerService.updateStore(authUser.getId(), storeId, dto);
         return new ResponseEntity<>("가게 정보 수정을 성공 했습니다.",HttpStatus.OK);
     }
 
@@ -59,7 +58,7 @@ public class StoreController {
             @PathVariable Long storeId,
             @Valid @RequestBody StoreDeleteRequestDto dto
     ){
-        storeService.deleteStore(authUser.getId(), storeId, dto);
+        storeOwnerService.deleteStore(authUser.getId(), storeId, dto);
         return new ResponseEntity<>("가게를 폐업하였습니다.",HttpStatus.NO_CONTENT);
     }
 
@@ -68,7 +67,7 @@ public class StoreController {
             @Auth AuthUser authUser,
             @PathVariable Long storeId
     ) {
-        String storeStatus = storeService.toggleStoreStatus(authUser.getId(), storeId);
+        String storeStatus = storeOwnerService.toggleStoreStatus(authUser.getId(), storeId);
 
         return new ResponseEntity<>(storeStatus, HttpStatus.OK);
     }

@@ -1,53 +1,79 @@
 package com.example.outsourcingproject.domain.store.entity;
 
 import com.example.outsourcingproject.common.entity.BaseEntity;
+import com.example.outsourcingproject.domain.store.enums.StoreCategory;
 import com.example.outsourcingproject.domain.user.entity.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.math.BigDecimal;
+import java.sql.Time;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
-@Getter
 @Entity
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "stores")
-@NoArgsConstructor
 public class Store extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    @Column(nullable = false, unique = true)
+    private String storeName;
 
+    @Column(nullable = false)
     private String address;
 
+    @Column(nullable = false)
     private String phone;
 
-    private String category;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StoreCategory category;
 
-    private String openTime;
+    @Column(nullable = false)
+    private Integer minPrice;
 
-    private String closeTime;
+    @Column(nullable = false)
+    private LocalTime openTime;
 
-    private BigDecimal rating;
+    @Column(nullable = false)
+    private LocalTime closeTime;
 
+    @Column(nullable = false)
+    private Double rating = 0.0;
+
+    @Column(nullable = false)
     private boolean closedFlag;
 
+    private LocalDateTime deleteAt;
+
+    //유저 이름 컬럼 추가 필요
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "users_id", nullable = false)
+    @JoinColumn(name = "user_id",nullable = false)
     private User user;
 
-    public Store(String name, String address, String phone, String category, String openTime, String closeTime, BigDecimal rating, boolean closedFlag, User user){
-        this.name = name;
+    public void updateStore(String storeName, String address, String phone, StoreCategory category,
+                     Integer minPrice, LocalTime openTime, LocalTime closeTime){
+        this.storeName = storeName;
         this.address = address;
         this.phone = phone;
         this.category = category;
+        this.minPrice = minPrice;
         this.openTime = openTime;
         this.closeTime = closeTime;
-        this.rating = rating;
-        this.closedFlag = closedFlag;
-        this.user = user;
     }
+    public void deleteStore() {
+        this.closedFlag = false;
+        this.deleteAt = LocalDateTime.now();
+    }
+
+    // 영업 시작, 종료 토글
+   public void toggleStoreStatus() {
+        this.closedFlag = !this.closedFlag;
+   }
 }

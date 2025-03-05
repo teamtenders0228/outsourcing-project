@@ -30,7 +30,7 @@ import static com.example.outsourcingproject.common.exception.ErrorCode.*;
 @Component
 public class JwtUtil {
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final long ACCESS_TOKNE_TIME = 120 * 1000L; // 1 hour
+    private static final long ACCESS_TOKNE_TIME = 3600 * 1000L; // 1 hour
     private static final long REFRESH_TOKNE_TIME = 24 * 3600 * 1000L;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;

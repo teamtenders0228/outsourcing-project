@@ -1,10 +1,9 @@
 package com.example.outsourcingproject.config;
 
 import com.example.outsourcingproject.common.exception.BaseException;
-import com.example.outsourcingproject.common.exception.ErrorCode;
-import com.example.outsourcingproject.domain.refreshToken.RefreshToken;
-import com.example.outsourcingproject.domain.refreshToken.RefreshTokenRepository;
+import com.example.outsourcingproject.domain.auth.dto.SigninResponseDto;
 import com.example.outsourcingproject.domain.user.entity.UserRole;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.*;
@@ -12,20 +11,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Optional;
-
-import static com.example.outsourcingproject.common.exception.ErrorCode.INVALID_REFRESH_TOKEN;
-import static com.example.outsourcingproject.common.exception.ErrorCode.REFRESH_TOKEN_NOT_FOUND;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtFilter implements Filter {
     private final JwtUtil jwtUtil;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -40,6 +37,7 @@ public class JwtFilter implements Filter {
         String url = httpRequest.getRequestURI();
 
         if(url.startsWith("/api/v1/auth")) {
+            log.info("인증 필요 없는 경로");
             chain.doFilter(request, response);
             return;
         }
@@ -61,7 +59,7 @@ public class JwtFilter implements Filter {
                 return;
             }
 
-            UserRole userRole = UserRole.of(claims.get("userRole", String.class));
+            //UserRole userRole = UserRole.of(claims.get("userRole", String.class));
 
             httpRequest.setAttribute("userId", Long.parseLong(claims.getSubject()));
             httpRequest.setAttribute("email", claims.get("email"));
@@ -84,9 +82,15 @@ public class JwtFilter implements Filter {
 
             try {
                 String newAccessToken = jwtUtil.refreshAccessToken(userId);
-                httpResponse.setHeader("Authorization",  newAccessToken);
-                chain.doFilter(request, response);
+                SigninResponseDto responseDto = new SigninResponseDto(newAccessToken);
+
+                httpResponse.setStatus(HttpStatus.OK.value());
+                httpResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                objectMapper.writeValue(httpResponse.getWriter(), responseDto);
+
+                return;
             } catch (BaseException ex) {
+                log.error("AccessToken 갱신 실패: {}", ex.getMessage(), ex);
                 httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
             }
         }

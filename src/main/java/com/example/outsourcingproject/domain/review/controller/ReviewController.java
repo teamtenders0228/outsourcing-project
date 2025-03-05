@@ -45,8 +45,6 @@ public class ReviewController {
                                                                      @RequestParam(defaultValue = "1") int page,
                                                                      @RequestParam(defaultValue = "10")int size){
 
-        log.info("storedId : {}", storeId);
-        log.info("review~~~~");
         return ResponseEntity.ok(reviewService.findReviewsByStoreId(storeId, page, size));
     }
 
@@ -67,7 +65,6 @@ public class ReviewController {
             @Valid @RequestBody ReviewUpdateRequestDto dto
     ){
         reviewService.updateReview(authUser, reviewId, dto);
-        log.info("리뷰 수정 성공");
         return new ResponseEntity<>("message : 리뷰 수정이 완료되었습니다.",HttpStatus.OK);
     }
 

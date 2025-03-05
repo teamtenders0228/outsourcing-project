@@ -3,7 +3,7 @@ package com.example.outsourcingproject.domain.menu.dto.response;
 import lombok.Getter;
 
 @Getter
-public class MenuResponseDto {
+public class MenuOrderResponseDto {
 
     private final String name;
 
@@ -11,7 +11,7 @@ public class MenuResponseDto {
 
     private final Integer count;
 
-    public MenuResponseDto(String name, String price, Integer count) {
+    public MenuOrderResponseDto(String name, String price, Integer count) {
         this.name = name;
         this.price = price;
         this.count = count;

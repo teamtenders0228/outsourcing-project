@@ -3,6 +3,8 @@ package com.example.outsourcingproject.domain.store.service;
 import com.example.outsourcingproject.common.encoder.PasswordEncoder;
 import com.example.outsourcingproject.common.exception.BaseException;
 import com.example.outsourcingproject.common.exception.ErrorCode;
+import com.example.outsourcingproject.domain.review.entity.Review;
+import com.example.outsourcingproject.domain.review.repository.ReviewRepository;
 import com.example.outsourcingproject.domain.store.dto.request.StoreCreateRequestDto;
 import com.example.outsourcingproject.domain.store.dto.request.StoreDeleteRequestDto;
 import com.example.outsourcingproject.domain.store.dto.request.StoreUpdateRequestDto;
@@ -31,6 +33,7 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ReviewRepository reviewRepository;
 
     @Transactional
     public StoreResponseDto createStore(Long authUserId, StoreCreateRequestDto dto) {
@@ -182,5 +185,23 @@ public class StoreService {
 
         store.toggleStoreStatus();
         return store.isClosedFlag() ? "가게 영업을 시작했습니다." : "가게 영업을 종료했습니다.";
+    }
+
+    @Transactional
+    public void updateRating(Long storeId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new BaseException(ErrorCode.STORE_NOT_FOUND, null));
+
+        List<Review> reviews = reviewRepository.findByStoreId(storeId);
+
+        if(reviews.isEmpty()) {
+            store.updateRate(0.0);
+        }
+        int cnt = reviews.size();
+        int total = reviews.stream().mapToInt(Review::getRate).sum();
+
+        double newRating = Math.round((double) total / cnt * 10.0) / 10.0;
+
+        store.updateRate(newRating);
     }
 }

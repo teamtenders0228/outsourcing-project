@@ -10,9 +10,9 @@ public class ReviewResponseDto {
 
     private final String comments;
 
-    private final Integer rate;
+    private final int rate;
 
-    public ReviewResponseDto(Long id, String comments, Integer rate) {
+    public ReviewResponseDto(Long id, String comments, int rate) {
         this.id = id;
         this.comments = comments;
         this.rate = rate;

@@ -65,8 +65,8 @@ public class MenuService {
         );
 
         int adjustPage = (page > 0) ? page - 1 : 0;
-        Pageable pageable = PageRequest.of(adjustPage, size, Sort.by("updatedAt").descending());
-        Page<Menu> menuPage = menuRepository.findAll(pageable);
+        Pageable pageable = PageRequest.of(adjustPage, size);
+        Page<Menu> menuPage = menuRepository.findAllByStoreId(store.getId(), pageable);
 
         List<MenuResponseDto> dtoList = menuPage.getContent().stream()
                 .map(MenuResponseDto::toDto)

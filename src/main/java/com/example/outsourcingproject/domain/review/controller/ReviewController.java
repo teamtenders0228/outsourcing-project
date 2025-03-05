@@ -37,34 +37,26 @@ public class ReviewController {
         return new ResponseEntity<>("message : 리뷰 등록이 완료되었습니다.",HttpStatus.OK);
     }
 
-    // 리뷰 다건 조회 (확인 후 삭제)
-    @GetMapping("/reviews")
-    public ResponseEntity<List<ReviewResponseDto>> getAllReview(@Auth AuthUser authUser){
-        return ResponseEntity.ok(reviewService.findAll(authUser));
-    }
-
     // 리뷰 조회 (최신순)
     @GetMapping("/reviews/sorted-by-createdDate")
     public ResponseEntity<Page<ReviewResponseDto>> getReriewsSortedByCreateAt(
-            @Auth AuthUser authUser,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ){
         log.info("생성일 기준 리뷰 전체 조회");
-        return ResponseEntity.ok(reviewService.findReriewsSortedByCreateAt(authUser, page, size));
+        return ResponseEntity.ok(reviewService.findReriewsSortedByCreateAt(page, size));
     }
 
     // 리뷰 조회 (별점범위)
     @GetMapping("/reviews/sorted-by-rate")
     public ResponseEntity<Page<ReviewResponseDto>> getReriewsSortedByRateRange(
-            @Auth AuthUser authUser,
             @Param("minRate") int minRate,
             @Param("maxRate") int maxRate,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ){
         log.info("별점범위 리뷰조회");
-        return ResponseEntity.ok(reviewService.findReriewsSortedByRateRange(authUser, minRate, maxRate, page, size));
+        return ResponseEntity.ok(reviewService.findReriewsSortedByRateRange(minRate, maxRate, page, size));
     }
 
     // 리뷰 수정

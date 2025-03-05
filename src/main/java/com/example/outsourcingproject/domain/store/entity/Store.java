@@ -6,7 +6,7 @@ import com.example.outsourcingproject.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Time;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -81,4 +81,19 @@ public class Store extends BaseEntity {
    public void toggleStoreStatus() {
         this.closedFlag = !this.closedFlag;
    }
+
+    // 테스트에 필요한 생성자
+    public Store(String storeName, String address, String phone, StoreCategory category, Integer minPrice, LocalTime openTime, LocalTime closeTime, Double rating) {
+        this.storeName = storeName;
+        this.address = address;
+        this.phone = phone;
+        this.category = category;
+        this.minPrice = minPrice;
+        this.openTime = openTime;
+        this.closeTime = closeTime;
+    }
+
+    public void updateRate(Double rating) {
+        this.rating = rating;
+    }
 }

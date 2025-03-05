@@ -17,8 +17,6 @@ public class OwnerAccessInterceptor implements HandlerInterceptor {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "해당 기능에 대한 권한이 없습니다.");
             return false;
         }
-
-        log.info("Interceptor - Admin API Access: Timestamp={}, URL={}", System.currentTimeMillis(), request.getRequestURI());
         return true;
     }
 }

@@ -25,25 +25,25 @@ public class OrderController {
 
     // 주문 요청 - (일반 유저만 가능)
     @PostMapping("/{storeId}")
-    public ResponseEntity<String> orderSave(
+    public ResponseEntity<OrderStatusResponseDto> orderSave(
             @Auth AuthUser authUser,
             @PathVariable Long storeId,
             @Valid @RequestBody List<OrderSaveRequestDto> requestDto
     ){
-        orderService.orderSave(authUser.getId(), authUser.getUserRole(), storeId, requestDto);
+        OrderStatusResponseDto responseDto = orderService.orderSave(authUser.getId(), authUser.getUserRole(), storeId, requestDto);
 
-        return new ResponseEntity<>("주문이 완료되었습니다.", HttpStatus.CREATED);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
     // 수락 - (가게사장님 만 가능)
     @PatchMapping("/accept/{orderId}")
-    public ResponseEntity<String> orderAccept(
+    public ResponseEntity<OrderStatusResponseDto> orderAccept(
             @Auth AuthUser authUser,
             @PathVariable Long orderId
     ){
-        orderService.orderAccept(authUser.getId(), orderId);
+        OrderStatusResponseDto responseDto = orderService.orderAccept(authUser.getId(), orderId);
 
-        return new ResponseEntity<>("주문이 수락되었습니다.", HttpStatus.OK);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     // 주문 상태 변경 - (가게사장님 만 가능)(거절 외 순차적으로 변경)
@@ -59,13 +59,13 @@ public class OrderController {
 
     // 주문 상태 변경 - (가게사장님 만 가능)(거절)
     @PatchMapping("/status/reject/{orderId}")
-    public ResponseEntity<String> statusChangeReject(
+    public ResponseEntity<OrderStatusResponseDto> statusChangeReject(
             @Auth AuthUser authUser,
             @PathVariable Long orderId
     ){
-        orderService.statusChangeReject(authUser.getId(), orderId);
+        OrderStatusResponseDto responseDto = orderService.statusChangeReject(authUser.getId(), orderId);
 
-        return new ResponseEntity<>("주문이 거절되었습니다.", HttpStatus.OK);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     // 사용자별 주문 내역 조회

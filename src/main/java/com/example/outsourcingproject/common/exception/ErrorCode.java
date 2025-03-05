@@ -20,6 +20,7 @@ public enum ErrorCode {
     INACTIVE_USER("이미 탈퇴된 회원입니다.", HttpStatus.BAD_REQUEST),
     REFRESH_TOKEN_NOT_FOUND("해당 refresh token을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST),
     INVALID_REFRESH_TOKEN("유효하지 않은 refresh token 입니다.", HttpStatus.BAD_REQUEST),
+    USERID_NOT_MATCH("유저 id가 일치하지 않습니다." , HttpStatus.BAD_REQUEST),
     //가게 관련 에러 코드
     INVALID_CATEGORY_TYPE("유효하지 않은 카테고리 이름입니다.", HttpStatus.BAD_REQUEST),
     CONFLICT_STORE_NAME("동일한 가게이름이 존재합니다.",HttpStatus.CONFLICT),
@@ -39,6 +40,8 @@ public enum ErrorCode {
     MENU_NOT_FOUND("메뉴 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     //리뷰 관련 에러 코드
     REVIEW_NOT_FOUND("리뷰를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    UNAUTHORIZED_REVIEW_ACCESS("리뷰 작성자만 수정 가능합니다", HttpStatus.UNAUTHORIZED),
+    DUPLICATE_REVIEW("이미 해당 주문에 대한 리뷰가 작성했습니다.", HttpStatus.BAD_REQUEST),
     //그 외 에러 코드
     INVALID_TYPE("유효하지 않은 타입입니다.",HttpStatus.BAD_REQUEST),
     SERVER_NOT_WORK("서버 문제로 인해 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);

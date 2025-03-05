@@ -5,6 +5,8 @@ import com.example.outsourcingproject.common.exception.BaseException;
 import com.example.outsourcingproject.common.exception.ErrorCode;
 import com.example.outsourcingproject.domain.menu.entity.Menu;
 import com.example.outsourcingproject.domain.menu.repository.MenuRepository;
+import com.example.outsourcingproject.domain.review.entity.Review;
+import com.example.outsourcingproject.domain.review.repository.ReviewRepository;
 import com.example.outsourcingproject.domain.store.dto.request.StoreCreateRequestDto;
 import com.example.outsourcingproject.domain.store.dto.request.StoreDeleteRequestDto;
 import com.example.outsourcingproject.domain.store.dto.request.StoreUpdateRequestDto;
@@ -15,10 +17,12 @@ import com.example.outsourcingproject.domain.store.repository.StoreRepository;
 import com.example.outsourcingproject.domain.user.entity.User;
 import com.example.outsourcingproject.domain.user.entity.UserRole;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +36,7 @@ public class StoreOwnerService {
     private final UserRepository userRepository;
     private final MenuRepository menuRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ReviewRepository reviewRepository;
 
     @Transactional
     public StoreResponseDto createStore(Long authUserId, StoreCreateRequestDto dto) {
@@ -88,6 +93,7 @@ public class StoreOwnerService {
         List<Menu> menus = menuRepository.findAllByStoreId(storeId);
         return StoreResponseDto.fromEntity(store);
     }
+
 
     @Transactional
     public StoreResponseDto updateStore(Long authUserId, Long storeId, StoreUpdateRequestDto dto){
@@ -164,6 +170,10 @@ public class StoreOwnerService {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new BaseException(ErrorCode.STORE_NOT_FOUND, null));
 
+        if (!store.getUser().getId().equals(authUserId)) {
+            throw new BaseException(ErrorCode.UNAUTHORIZED_STORE_ACCESS, null);
+        }
+
         if(user.getUserRole() != UserRole.OWNER){
             throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
         }
@@ -178,5 +188,23 @@ public class StoreOwnerService {
 
         store.toggleStoreStatus();
         return store.isClosedFlag() ? "가게 영업을 시작했습니다." : "가게 영업을 종료했습니다.";
+    }
+
+    @Transactional
+    public void updateRating(Long storeId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new BaseException(ErrorCode.STORE_NOT_FOUND, null));
+
+        List<Review> reviews = reviewRepository.findByStoreId(storeId);
+
+        if(reviews.isEmpty()) {
+            store.updateRate(0.0);
+        }
+        int cnt = reviews.size();
+        int total = reviews.stream().mapToInt(Review::getRate).sum();
+
+        double newRating = Math.round((double) total / cnt * 10.0) / 10.0;
+
+        store.updateRate(newRating);
     }
 }

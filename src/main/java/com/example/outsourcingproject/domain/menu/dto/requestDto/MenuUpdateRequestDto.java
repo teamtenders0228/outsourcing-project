@@ -1,9 +1,13 @@
 package com.example.outsourcingproject.domain.menu.dto.requestDto;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class MenuUpdateRequestDto {
 
     private String menuName;

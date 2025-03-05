@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/stores/{storeId}") // store 기능 구현되면 /{storeId} 넣기
+@RequestMapping("/api/v1/menus")
 public class MenuController {
 
     private final MenuService menuService;
 
     // 메뉴 등록
-    @PostMapping("/menus")
+    @PostMapping("/stores/{storeId}")
     public ResponseEntity<String> saveMenu(
             @Auth AuthUser authUser,
             @Valid @RequestBody MenuSaveRequestDto dto,
@@ -35,7 +35,7 @@ public class MenuController {
     }
 
     // 메뉴 전체 조회
-    @GetMapping("/menus")
+    @GetMapping("/stores/{storeId}")
     public ResponseEntity<Page<MenuResponseDto>> getAllMenu(
             @Auth AuthUser authUser,
             @RequestParam(defaultValue = "1") int page,
@@ -46,7 +46,7 @@ public class MenuController {
     }
 
     // 메뉴 단건 조회
-    @GetMapping("/menus/{menuId}")
+    @GetMapping("/{menuId}/stores/{storeId}")
     public ResponseEntity<MenuResponseDto> getOneMenu(
             @Auth AuthUser authUser,
             @PathVariable Long menuId,
@@ -56,7 +56,7 @@ public class MenuController {
     }
 
     // 메뉴 수정
-    @PatchMapping("/menus/{menuId}")
+    @PatchMapping("/{menuId}/stores/{storeId}")
     public ResponseEntity<String> updateMenu(
             @Auth AuthUser authUser,
             @PathVariable Long menuId,
@@ -69,7 +69,7 @@ public class MenuController {
     }
 
     // 메뉴 삭제
-    @DeleteMapping("/menus/{menuId}")
+    @DeleteMapping("/{menuId}/stores/{storeId}")
     public ResponseEntity<String> deleteMenu(
             @Auth AuthUser authUser,
             @PathVariable Long menuId,

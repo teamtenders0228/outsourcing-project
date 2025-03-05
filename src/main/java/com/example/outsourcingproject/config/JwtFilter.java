@@ -46,7 +46,6 @@ public class JwtFilter implements Filter {
         String url = httpRequest.getRequestURI();
 
         if(url.startsWith("/api/v1/auth")) {
-            log.info("인증 필요 없는 경로");
             chain.doFilter(request, response);
             return;
         }

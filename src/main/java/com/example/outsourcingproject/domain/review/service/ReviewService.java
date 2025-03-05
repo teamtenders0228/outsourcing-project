@@ -4,11 +4,16 @@ import com.example.outsourcingproject.common.annotation.Auth;
 import com.example.outsourcingproject.common.dto.AuthUser;
 import com.example.outsourcingproject.common.exception.BaseException;
 import com.example.outsourcingproject.common.exception.ErrorCode;
+import com.example.outsourcingproject.domain.order.entity.Order;
+import com.example.outsourcingproject.domain.order.repository.OrderRepository;
 import com.example.outsourcingproject.domain.review.dto.request.ReviewSaveRequestDto;
 import com.example.outsourcingproject.domain.review.dto.request.ReviewUpdateRequestDto;
 import com.example.outsourcingproject.domain.review.dto.response.ReviewResponseDto;
 import com.example.outsourcingproject.domain.review.entity.Review;
 import com.example.outsourcingproject.domain.review.repository.ReviewRepository;
+import com.example.outsourcingproject.domain.store.entity.Store;
+import com.example.outsourcingproject.domain.store.repository.StoreRepository;
+import com.example.outsourcingproject.domain.store.service.StoreOwnerService;
 import com.example.outsourcingproject.domain.user.entity.UserRole;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -27,19 +34,30 @@ import java.util.List;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final StoreOwnerService storeOwnerService;
+    private final OrderRepository orderRepository;
 
     // 리뷰 등록
     @Transactional
-    public ReviewResponseDto saveReview(AuthUser authUser, ReviewSaveRequestDto dto) {
+    public ReviewResponseDto saveReview(AuthUser authUser, Long orderId, ReviewSaveRequestDto dto) {
         // USER 검증
         if (!authUser.getUserRole().equals(UserRole.USER)){
             throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
         }
 
-        Review review = new Review(dto.getComments(), dto.getRate());
+        // 같은 유저로 요청했을때
+        if (reviewRepository.existsByOrderIdAndUserId(orderId, authUser.getId())){
+            throw new BaseException(ErrorCode.DUPLICATE_REVIEW, null);
+        }
+
+        Order order = orderRepository.findByIdOrElseThrow(orderId);
+
+        Review review = new Review(order, dto.getComments(), dto.getRate());
         reviewRepository.save(review);
 
-        log.info("리뷰 생성 성공");
+        // 가게 평점 update
+        storeOwnerService.updateRating(order.getStore().getId());
+
         return new ReviewResponseDto(
                 review.getId(),
                 review.getComments(),
@@ -47,53 +65,48 @@ public class ReviewService {
         );
     }
 
-    // 리뷰 조회 (최신순)
-    public Page<ReviewResponseDto> findReriewsSortedByCreateAt(int page, int size) {
-        int adjustPage = (page > 0) ? page - 1 : 0;
-        Pageable pageable = PageRequest.of(adjustPage, size, Sort.by("createdAt").descending());
-        Page<Review> reviewPage = reviewRepository.findAllByCreatedAt(pageable);
+    @Transactional
+    public Page<ReviewResponseDto> findReviewsByStoreId(Long storeId, int page, int size) {
+        Pageable pageable = PageRequest.of((page > 0) ? page - 1 : 0, size, Sort.by("createdAt").descending());
+        Page<Review> reviewPage = reviewRepository.findByStoreIdWithPagination(storeId, pageable);
 
-        List<ReviewResponseDto> dtoList = reviewPage.getContent().stream()
-                .map(ReviewResponseDto::toDto)
-                .toList();
-
-        return new PageImpl<>(dtoList, pageable, reviewPage.getTotalElements());
+        return reviewPage.map(review -> new ReviewResponseDto(
+                review.getId(),
+                review.getComments(),
+                review.getRate()
+        ));
     }
 
-    // 리뷰 조회 (별점범위)
-    public Page<ReviewResponseDto> findReriewsSortedByRateRange(int minRate, int maxRate, int page, int size) {
-        int adjustPage = (page > 0) ? page - 1 : 0;
-        Pageable pageable = PageRequest.of(adjustPage, size);
-        Page<Review> reviewPage = reviewRepository.findAllByRateRange(minRate, maxRate, pageable);
+    @Transactional(readOnly = true)
+    public Page<ReviewResponseDto> findReviewsByUserId(AuthUser authUser, int page, int size) {
+        // 로그인된 사용자 검증
+        if (!authUser.getUserRole().equals(UserRole.USER)) {
+            throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
+        }
 
-        List<ReviewResponseDto> dtoList = reviewPage.getContent().stream()
-                .map(ReviewResponseDto::toDto)
-                .toList();
+        Pageable pageable = PageRequest.of((page > 0) ? page - 1 : 0, size, Sort.by("createdAt").descending());
+        Page<Review> reviewPage = reviewRepository.findByUserId(authUser.getId(), pageable);
 
-        return new PageImpl<>(dtoList, pageable, reviewPage.getTotalElements());
+        return reviewPage.map(review -> new ReviewResponseDto(
+                review.getId(),
+                review.getComments(),
+                review.getRate()
+        ));
     }
 
-    // 리뷰 수정
     @Transactional
     public ReviewResponseDto updateReview(AuthUser authUser, Long reviewId, ReviewUpdateRequestDto dto) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND, null));
 
-        // USER 검증
-        if (!authUser.getUserRole().equals(UserRole.USER)){
-            throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
+        if (!review.getOrder().getUser().getId().equals(authUser.getId())) {
+            throw new BaseException(ErrorCode.UNAUTHORIZED_REVIEW_ACCESS, null);
         }
 
-        //리뷰 검증
-        Review review = reviewRepository.findById(reviewId).orElseThrow(
-                () -> new BaseException(ErrorCode.REVIEW_NOT_FOUND, null)
-        );
+        review.updateComments(dto.getComments(), dto.getRate());
 
-        if(review.getComments() != null){
-            review.updateComments(dto.getComments());
-        }
-
-        if(review.getRate() != null){
-            review.updateRate(dto.getRate());
-        }
+        // 가게 평점 업데이트
+        storeOwnerService.updateRating(review.getOrder().getStore().getId());
 
         return new ReviewResponseDto(
                 review.getId(),
@@ -102,18 +115,19 @@ public class ReviewService {
         );
     }
 
-    // 리뷰 삭제
+    @Transactional
     public void deleteReview(AuthUser authUser, Long reviewId) {
-        // USER 검증
-        if (!authUser.getUserRole().equals(UserRole.USER)){
-            throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND, null));
+
+        // 로그인한 사용자가 해당 리뷰의 작성자인지 검증
+        if (!review.getOrder().getUser().getId().equals(authUser.getId())) {
+            throw new BaseException(ErrorCode.UNAUTHORIZED_REVIEW_ACCESS, null);
         }
 
-        //리뷰 검증
-        Review review = reviewRepository.findById(reviewId).orElseThrow(
-                () -> new BaseException(ErrorCode.REVIEW_NOT_FOUND, null)
-        );
+        reviewRepository.delete(review);
 
-        reviewRepository.deleteById(reviewId);
+        // 가게 평점 업데이트
+        storeOwnerService.updateRating(review.getOrder().getStore().getId());
     }
 }

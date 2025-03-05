@@ -78,27 +78,24 @@ public class StoreService {
     }
 
     @Transactional(readOnly = true)
-    public StoreResponseDto getStoreById(Long authUserId, Long storeId) {
-        // 유저 존재 여부 확인
-        User user = userRepository.findById(authUserId)
-                .orElseThrow(() -> new BaseException(USER_NOT_FOUND, null));
-        // 유저 등급 검증 -> 점주만 가게 조회
-        if(user.getUserRole() != UserRole.OWNER){
-            throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
-        }
+    public StoreResponseDto getStoreById(Long storeId, Long authUserId) {
+        userRepository.findById(authUserId)
+                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND, null));
 
-        // 가게 존재 여부 확인
         Store store = storeRepository.getStoreById(storeId)
                 .orElseThrow(() -> new BaseException(ErrorCode.STORE_NOT_FOUND, null));
 
-        // 유저 등급에 따라 조회 가능한 가게 필터링
-        if (user.getUserRole() != UserRole.OWNER && store.isClosedFlag()) {
-            throw new BaseException(ErrorCode.STORE_NOT_FOUND, null);
+        // 폐업한 가게(closedFlag = false)는 점주만 조회 가능
+        if (!store.isClosedFlag()) {
+
+            if (!store.getUser().getId().equals(authUserId)) {
+                throw new BaseException(ErrorCode.UNAUTHORIZED_STORE_ACCESS, null);
+            }
         }
 
-        // 메뉴 목록 로직 필요
         return StoreResponseDto.fromEntity(store);
     }
+
 
     @Transactional
     public StoreResponseDto updateStore(Long authUserId, Long storeId, StoreUpdateRequestDto dto){
@@ -128,7 +125,7 @@ public class StoreService {
             throw new BaseException(ErrorCode.CONFLICT_STORE_NAME, dto.getStoreName());
         }
 
-        // DTO에서 `null`이 아닌 값만 기존 필드 값으로 대체
+        // DTO에서 null이 아닌 값만 기존 필드 값으로 대체
         store.updateStore(
                 dto.getStoreName() != null ? dto.getStoreName() : store.getStoreName(),
                 dto.getAddress() != null ? dto.getAddress() : store.getAddress(),
@@ -144,6 +141,7 @@ public class StoreService {
 
     @Transactional
     public void deleteStore(Long authUserId, Long storeId, StoreDeleteRequestDto dto) {
+
         User user = userRepository.findById(authUserId)
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND, null));
 
@@ -161,8 +159,8 @@ public class StoreService {
         if(!passwordEncoder.matches(dto.getPassword(), user.getPassword())){
             throw new BaseException(PASSWORD_MISMATCH, null);
         }
-        // 가게를 아예 폐업하는 필드 필요..
-        storeRepository.delete(store);
+
+        store.deleteStore();
     }
 
     @Transactional

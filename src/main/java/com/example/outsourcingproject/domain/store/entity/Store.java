@@ -6,7 +6,7 @@ import com.example.outsourcingproject.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Time;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -86,6 +86,8 @@ public class Store extends BaseEntity {
         this.minPrice = minPrice;
         this.openTime = openTime;
         this.closeTime = closeTime;
+
+    public void updateRate(Double rating) {
         this.rating = rating;
     }
 }

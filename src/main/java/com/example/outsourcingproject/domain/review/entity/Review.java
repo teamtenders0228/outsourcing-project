@@ -1,9 +1,12 @@
 package com.example.outsourcingproject.domain.review.entity;
 
 import com.example.outsourcingproject.common.entity.BaseEntity;
+import com.example.outsourcingproject.domain.order.entity.Order;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.Objects;
 
 @Getter
 @Entity
@@ -15,24 +18,25 @@ public class Review extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", unique = true, nullable = false)
+    private Order order;
+
     @Column(nullable = false)
     private String comments;
 
     @Column(nullable = false)
-    private Integer rate;
+    private int rate;
 
-    public Review(String comments, Integer rate) {
+    public Review(Order order, String comments, int rate) {
+        this.order = order;
         this.comments = comments;
         this.rate = rate;
     }
 
-    // comments만 수정
-    public void updateComments(String comments) {
+    public void updateComments(String comments, int rate) {
         this.comments = comments;
-    }
-
-    // rate만 수정
-    public void updateRate(Integer rate) {
         this.rate = rate;
     }
+
 }

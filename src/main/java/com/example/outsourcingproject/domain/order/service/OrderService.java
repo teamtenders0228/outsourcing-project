@@ -1,5 +1,6 @@
 package com.example.outsourcingproject.domain.order.service;
 
+import com.example.outsourcingproject.common.annotation.Trace;
 import com.example.outsourcingproject.common.exception.BaseException;
 import com.example.outsourcingproject.common.exception.ErrorCode;
 import com.example.outsourcingproject.domain.order.dto.response.*;
@@ -42,7 +43,8 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
 
     // 주문 요청 - (일반 유저만 가능)
-    public void orderSave(Long userId, UserRole userRole, Long storeId, List<OrderSaveRequestDto> menus) {
+    @Trace
+    public OrderStatusResponseDto orderSave(Long userId, UserRole userRole, Long storeId, List<OrderSaveRequestDto> menus) {
         // 일반 유저인지 판별
         if(userRole != UserRole.USER) throw new BaseException(ErrorCode.ORDER_ONLY_FOR_REGULAR_USER, null);
 
@@ -83,11 +85,14 @@ public class OrderService {
 
             orderItemRepository.save(newOrderItem);
         }
+
+        return new OrderStatusResponseDto("주문이 완료되었습니다.", savedOrder.getId(), storeId);
     }
 
     // 수락 - (가게사장님 만 가능)
+    @Trace
     @Transactional
-    public void orderAccept(Long userId, Long orderId) {
+    public OrderStatusResponseDto orderAccept(Long userId, Long orderId) {
         // 가게 사장인지 판별
         Order findOrder = orderRepository.findByIdOrElseThrow(orderId);
         List<Store> storeList = storeRepository.findByUser_Id(userId);
@@ -97,9 +102,12 @@ public class OrderService {
         // 주문 수락
         findOrder.setStatus(Status.ACCEPT);
         findOrder.setAccepted(true);
+
+        return new OrderStatusResponseDto("주문이 수락되었습니다.", orderId, findOrder.getStore().getId());
     }
 
     // 주문 상태 변경 - (가게사장님 만 가능)(거절 외 순차적으로 변경)
+    @Trace
     @Transactional
     public OrderStatusResponseDto updateProgressStatus(Long userId, Long orderId) {
         // 가게 사장인지 판별
@@ -138,12 +146,13 @@ public class OrderService {
 
         findOrder.setAccepted(accepted);
 
-        return new OrderStatusResponseDto(message);
+        return new OrderStatusResponseDto(message, orderId, findOrder.getStore().getId());
     }
 
     // 주문 상태 변경 - (가게사장님 만 가능)(거절)
+    @Trace
     @Transactional
-    public void statusChangeReject(Long userId, Long orderId) {
+    public OrderStatusResponseDto statusChangeReject(Long userId, Long orderId) {
         // 가게 사장인지 판별
         Order findOrder = orderRepository.findByIdOrElseThrow(orderId);
         List<Store> storeList = storeRepository.findByUser_Id(userId);
@@ -153,6 +162,8 @@ public class OrderService {
         // status 변경
         findOrder.setAccepted(false);
         findOrder.setStatus(Status.REJECT);
+
+        return new OrderStatusResponseDto("주문이 거절되었습니다.", orderId, findOrder.getStore().getId());
     }
 
     // 사용자별 주문 내역 조회
@@ -180,7 +191,7 @@ public class OrderService {
                 Menu findMenu = menuRepository.findByIdOrElseThrow(findOrderItem.getMenu().getId());
 
                 MenuResponseDto menuResponseDto = new MenuResponseDto(
-                        findMenu.getName(),
+                        findMenu.getMenuName(),
                         formatter.format(findMenu.getPrice()),
                         findOrderItem.getCount()
                 );
@@ -194,9 +205,9 @@ public class OrderService {
             Store findStore = storeRepository.findByIdOrElseThrow(findOrder.getStore().getId());
 
             UserOrdersResponseDto dto = new UserOrdersResponseDto(
-                    findStore.getName(),
+                    findStore.getStoreName(),
                     menuResponseDtoList,
-                    findStore.getCategory(),
+                    findStore.getCategory().toString(),
                     findOrder.getStatus(),
                     formatter.format(totalPrice)
             );

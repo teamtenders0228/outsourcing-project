@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Time;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -49,6 +50,8 @@ public class Store extends BaseEntity {
     @Column(nullable = false)
     private boolean closedFlag;
 
+    private LocalDateTime deleteAt;
+
     //유저 이름 컬럼 추가 필요
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",nullable = false)
@@ -63,6 +66,10 @@ public class Store extends BaseEntity {
         this.minPrice = minPrice;
         this.openTime = openTime;
         this.closeTime = closeTime;
+    }
+    public void deleteStore() {
+        this.closedFlag = false;
+        this.deleteAt = LocalDateTime.now();
     }
 
     // 영업 시작, 종료 토글

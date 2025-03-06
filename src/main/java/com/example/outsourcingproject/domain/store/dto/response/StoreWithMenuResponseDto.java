@@ -3,12 +3,17 @@ package com.example.outsourcingproject.domain.store.dto.response;
 import com.example.outsourcingproject.domain.menu.dto.response.MenuResponseDto;
 import com.example.outsourcingproject.domain.menu.entity.Menu;
 import com.example.outsourcingproject.domain.store.entity.Store;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalTime;
 import java.util.List;
 
+@JsonPropertyOrder({
+        "storeName", "userName", "address", "phone", "category", "minPrice",
+        "openTime", "closeTime", "rating", "menus"
+})
 @Getter
 public class StoreWithMenuResponseDto {
     private String storeName;

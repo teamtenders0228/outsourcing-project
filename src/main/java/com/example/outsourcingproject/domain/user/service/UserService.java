@@ -42,7 +42,7 @@ public class UserService {
     }
 
     @Transactional
-    public void changeProfile(Long id, ChangeProfileRequestDto requestDto) {
+    public UserResponseDto changeProfile(Long id, ChangeProfileRequestDto requestDto) {
         User user = userRepository.findById(id).orElseThrow(() -> new BaseException(USER_NOT_FOUND, null));
 
         if(user.getDeleteFlag()){ throw new BaseException(INACTIVE_USER, null); }
@@ -52,6 +52,8 @@ public class UserService {
         }
 
         user.changeProfile(requestDto.getName(), requestDto.getPhone(), requestDto.getAddress());
+
+        return new UserResponseDto(user.getName(), user.getEmail(), user.getPhone(), user.getAddress());
     }
 
     @Transactional

@@ -3,6 +3,7 @@ package com.example.outsourcingproject.domain.auth.controller;
 import com.example.outsourcingproject.domain.auth.dto.request.SigninRequestDto;
 import com.example.outsourcingproject.domain.auth.dto.response.SigninResponseDto;
 import com.example.outsourcingproject.domain.auth.dto.request.SignupRequestDto;
+import com.example.outsourcingproject.domain.auth.dto.response.SignupResponseDto;
 import com.example.outsourcingproject.domain.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +18,9 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@Valid @RequestBody SignupRequestDto signupRequestDto) {
-        authService.signup(signupRequestDto);
-        return new ResponseEntity<>("회원가입에 성공했습니다.", HttpStatus.OK);
+    public ResponseEntity<SignupResponseDto> signup(@Valid @RequestBody SignupRequestDto signupRequestDto) {
+
+        return new ResponseEntity<>(authService.signup(signupRequestDto), HttpStatus.OK);
     }
 
     @PostMapping("/signin")

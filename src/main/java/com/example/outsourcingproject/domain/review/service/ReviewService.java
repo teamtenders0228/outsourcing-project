@@ -1,6 +1,5 @@
 package com.example.outsourcingproject.domain.review.service;
 
-import com.example.outsourcingproject.common.annotation.Auth;
 import com.example.outsourcingproject.common.dto.AuthUser;
 import com.example.outsourcingproject.common.exception.BaseException;
 import com.example.outsourcingproject.common.exception.ErrorCode;
@@ -11,22 +10,13 @@ import com.example.outsourcingproject.domain.review.dto.request.ReviewUpdateRequ
 import com.example.outsourcingproject.domain.review.dto.response.ReviewResponseDto;
 import com.example.outsourcingproject.domain.review.entity.Review;
 import com.example.outsourcingproject.domain.review.repository.ReviewRepository;
-import com.example.outsourcingproject.domain.store.entity.Store;
-import com.example.outsourcingproject.domain.store.repository.StoreRepository;
 import com.example.outsourcingproject.domain.store.service.StoreOwnerService;
-import com.example.outsourcingproject.domain.user.entity.UserRole;
-import com.example.outsourcingproject.domain.user.repository.UserRepository;
+import com.example.outsourcingproject.domain.user.enums.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -45,7 +35,7 @@ public class ReviewService {
             throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
         }
 
-        // 같은 유저로 요청했을때
+        // 같은 유저로 요청했을때 (중복 방지)
         if (reviewRepository.existsByOrderIdAndUserId(orderId, authUser.getId())){
             throw new BaseException(ErrorCode.DUPLICATE_REVIEW, null);
         }
@@ -58,11 +48,7 @@ public class ReviewService {
         // 가게 평점 update
         storeOwnerService.updateRating(order.getStore().getId());
 
-        return new ReviewResponseDto(
-                review.getId(),
-                review.getComments(),
-                review.getRate()
-        );
+        return new ReviewResponseDto(review.getId(), review.getComments(), review.getRate());
     }
 
     @Transactional
@@ -70,11 +56,8 @@ public class ReviewService {
         Pageable pageable = PageRequest.of((page > 0) ? page - 1 : 0, size, Sort.by("createdAt").descending());
         Page<Review> reviewPage = reviewRepository.findByStoreIdWithPagination(storeId, pageable);
 
-        return reviewPage.map(review -> new ReviewResponseDto(
-                review.getId(),
-                review.getComments(),
-                review.getRate()
-        ));
+        return reviewPage
+                .map(review -> new ReviewResponseDto( review.getId(), review.getComments(), review.getRate()));
     }
 
     @Transactional(readOnly = true)
@@ -87,11 +70,8 @@ public class ReviewService {
         Pageable pageable = PageRequest.of((page > 0) ? page - 1 : 0, size, Sort.by("createdAt").descending());
         Page<Review> reviewPage = reviewRepository.findByUserId(authUser.getId(), pageable);
 
-        return reviewPage.map(review -> new ReviewResponseDto(
-                review.getId(),
-                review.getComments(),
-                review.getRate()
-        ));
+        return reviewPage
+                .map(review -> new ReviewResponseDto(review.getId(), review.getComments(), review.getRate()));
     }
 
     @Transactional
@@ -99,20 +79,14 @@ public class ReviewService {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND, null));
 
-        if (!review.getOrder().getUser().getId().equals(authUser.getId())) {
-            throw new BaseException(ErrorCode.UNAUTHORIZED_REVIEW_ACCESS, null);
-        }
+        validateOwner(authUser, review);
 
         review.updateComments(dto.getComments(), dto.getRate());
 
         // 가게 평점 업데이트
         storeOwnerService.updateRating(review.getOrder().getStore().getId());
 
-        return new ReviewResponseDto(
-                review.getId(),
-                review.getComments(),
-                review.getRate()
-        );
+        return new ReviewResponseDto(review.getId(), review.getComments(), review.getRate());
     }
 
     @Transactional
@@ -120,14 +94,20 @@ public class ReviewService {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND, null));
 
-        // 로그인한 사용자가 해당 리뷰의 작성자인지 검증
-        if (!review.getOrder().getUser().getId().equals(authUser.getId())) {
-            throw new BaseException(ErrorCode.UNAUTHORIZED_REVIEW_ACCESS, null);
-        }
+        validateOwner(authUser, review);
 
         reviewRepository.delete(review);
 
         // 가게 평점 업데이트
         storeOwnerService.updateRating(review.getOrder().getStore().getId());
+    }
+
+    private void validateOwner(AuthUser authUser, Review review) {
+        if (!authUser.getUserRole().equals(UserRole.USER)) {
+            throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
+        }
+        if (!review.getOrder().getUser().getId().equals(authUser.getId())) {
+            throw new BaseException(ErrorCode.UNAUTHORIZED_REVIEW_ACCESS, null);
+        }
     }
 }

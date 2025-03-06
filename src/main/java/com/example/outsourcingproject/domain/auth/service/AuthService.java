@@ -6,8 +6,9 @@ import com.example.outsourcingproject.config.JwtUtil;
 import com.example.outsourcingproject.domain.auth.dto.request.SigninRequestDto;
 import com.example.outsourcingproject.domain.auth.dto.response.SigninResponseDto;
 import com.example.outsourcingproject.domain.auth.dto.request.SignupRequestDto;
+import com.example.outsourcingproject.domain.auth.dto.response.SignupResponseDto;
 import com.example.outsourcingproject.domain.user.entity.User;
-import com.example.outsourcingproject.domain.user.entity.UserRole;
+import com.example.outsourcingproject.domain.user.enums.UserRole;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public void signup(@Valid SignupRequestDto signupRequestDto) {
+    public SignupResponseDto signup(@Valid SignupRequestDto signupRequestDto) {
         if (userRepository.existsByEmail(signupRequestDto.getEmail())) {
             throw new BaseException(DUPLICATE_EMAIL, null);
         }
@@ -46,6 +47,7 @@ public class AuthService {
         );
 
         userRepository.save(user);
+        return new SignupResponseDto(user.getId(), user.getName(), user.getEmail(), user.getPhone(), user.getAddress());
     }
 
     public SigninResponseDto signin(@Valid SigninRequestDto signinRequestDto) {

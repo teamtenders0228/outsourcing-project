@@ -36,12 +36,11 @@ public class UserController {
     }
 
     @PatchMapping("/me/changeProfile")
-    public ResponseEntity<String> changeProfile(
+    public ResponseEntity<UserResponseDto> changeProfile(
             @Auth AuthUser authUser,
             @Valid @RequestBody ChangeProfileRequestDto requestDto
     ) {
-        userService.changeProfile(authUser.getId(), requestDto);
-        return new ResponseEntity<>("회원정보가 변경되었습니다.", HttpStatus.OK);
+        return new ResponseEntity<>(userService.changeProfile(authUser.getId(), requestDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/me/delete")

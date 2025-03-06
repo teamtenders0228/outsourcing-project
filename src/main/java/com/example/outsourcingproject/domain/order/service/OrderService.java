@@ -5,7 +5,7 @@ import com.example.outsourcingproject.common.exception.BaseException;
 import com.example.outsourcingproject.common.exception.ErrorCode;
 import com.example.outsourcingproject.domain.order.dto.response.*;
 import com.example.outsourcingproject.domain.user.entity.User;
-import com.example.outsourcingproject.domain.user.entity.UserRole;
+import com.example.outsourcingproject.domain.user.enums.UserRole;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import com.example.outsourcingproject.domain.menu.dto.response.MenuOrderResponseDto;
 import com.example.outsourcingproject.domain.menu.entity.Menu;

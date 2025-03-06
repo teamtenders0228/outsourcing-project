@@ -1,4 +1,4 @@
-package com.example.outsourcingproject.domain.user.entity;
+package com.example.outsourcingproject.domain.user.enums;
 
 import com.example.outsourcingproject.common.exception.BaseException;
 import com.example.outsourcingproject.common.exception.ErrorCode;

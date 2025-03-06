@@ -8,13 +8,11 @@ import com.example.outsourcingproject.domain.menu.dto.response.MenuResponseDto;
 import com.example.outsourcingproject.domain.menu.service.MenuService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/menus")
@@ -30,7 +28,6 @@ public class MenuController {
             @PathVariable Long storeId
     ) {
         menuService.saveMenu(authUser, dto, storeId);
-        log.info("메뉴 생성 성공");
         return new ResponseEntity<>("message : 메뉴 등록이 완료되었습니다.", HttpStatus.OK);
     }
 
@@ -64,7 +61,6 @@ public class MenuController {
             @Valid @RequestBody MenuUpdateRequestDto dto
     ) {
         menuService.updateMenu(authUser, menuId, storeId, dto);
-        log.info("메뉴 수정 성공");
         return new ResponseEntity<>("message : 메뉴 수정이 완료되었습니다.", HttpStatus.OK);
     }
 
@@ -75,7 +71,6 @@ public class MenuController {
             @PathVariable Long menuId,
             @PathVariable Long storeId
     ) {
-        log.info("메뉴 삭제 성공");
         menuService.deleteMenu(authUser, menuId, storeId);
         return new ResponseEntity<>("message : 메뉴 삭제가 완료되었습니다.", HttpStatus.OK);
     }

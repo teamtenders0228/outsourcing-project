@@ -4,6 +4,8 @@ package com.example.outsourcingproject.domain.menu.dto.response;
 import com.example.outsourcingproject.domain.menu.entity.Menu;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 public class MenuResponseDto {
 
@@ -30,5 +32,11 @@ public class MenuResponseDto {
                 menu.getMenuName(),
                 menu.priceToString()
         );
+    }
+
+    public static List<MenuResponseDto> toDtoList(List<Menu> menus){
+        return menus.stream()
+                .map(MenuResponseDto::toDto)
+                .toList();
     }
 }

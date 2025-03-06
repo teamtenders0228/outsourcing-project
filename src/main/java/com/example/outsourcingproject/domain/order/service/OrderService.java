@@ -91,11 +91,8 @@ public class OrderService {
     @Trace
     @Transactional
     public OrderStatusResponseDto acceptOrder(Long userId, Long orderId) {
-        // 가게 사장인지 판별
-        Order findOrder = orderRepository.findByIdOrElseThrow(orderId);
-        List<Store> storeList = storeRepository.findByUser_Id(userId);
-
-        if(!storeList.contains(findOrder.getStore())) throw new BaseException(ErrorCode.ORDER_ACCEPT_ONLY_FOR_OWNER, null);
+        // 가게 주인 인지 판별
+        Order findOrder = isStoreOwner(userId, orderId);
 
         // 주문 수락
         findOrder.setStatus(Status.ACCEPT);
@@ -108,11 +105,8 @@ public class OrderService {
     @Trace
     @Transactional
     public OrderStatusResponseDto updateProgressStatus(Long userId, Long orderId) {
-        // 가게 사장인지 판별
-        Order findOrder = orderRepository.findByIdOrElseThrow(orderId);
-        List<Store> storeList = storeRepository.findByUser_Id(userId);
-
-        if(!storeList.contains(findOrder.getStore())) throw new BaseException(ErrorCode.ORDER_STATUS_ONLY_FOR_OWNER, null);
+        // 가게 주인 인지 판별
+        Order findOrder = isStoreOwner(userId, orderId);
 
         // 메시지 작성
         String message = "";
@@ -151,11 +145,8 @@ public class OrderService {
     @Trace
     @Transactional
     public OrderStatusResponseDto changeStatusToReject(Long userId, Long orderId) {
-        // 가게 사장인지 판별
-        Order findOrder = orderRepository.findByIdOrElseThrow(orderId);
-        List<Store> storeList = storeRepository.findByUser_Id(userId);
-
-        if(!storeList.contains(findOrder.getStore())) throw new BaseException(ErrorCode.ORDER_REJECT_ONLY_FOR_OWNER, null);
+        // 가게 주인 인지 판별
+        Order findOrder = isStoreOwner(userId, orderId);
 
         // status 변경
         findOrder.setAccepted(false);
@@ -213,5 +204,14 @@ public class OrderService {
             dtoList.add(dto);
         }
         return dtoList;
+    }
+
+    public Order isStoreOwner(Long userId, Long orderId){
+        Order findOrder = orderRepository.findByIdOrElseThrow(orderId);
+        List<Store> storeList = storeRepository.findByUser_Id(userId);
+
+        if(!storeList.contains(findOrder.getStore())) throw new BaseException(ErrorCode.ORDER_STATUS_ONLY_FOR_OWNER, null);
+
+        return findOrder;
     }
 }

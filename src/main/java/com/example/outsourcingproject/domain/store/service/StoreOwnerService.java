@@ -40,10 +40,6 @@ public class StoreOwnerService {
     public StoreResponseDto saveStore(Long authUserId, StoreSaveRequestDto dto) {
         // 유저 검증
         User user = userRepository.findById(authUserId).orElseThrow(() -> new BaseException(USER_NOT_FOUND, null));
-        // 유저 등급 검증
-        if(user.getUserRole() != UserRole.OWNER){
-            throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
-        }
         // 가게 개수 검증
         int storeCount = storeRepository.countByUserId(authUserId);
         if(storeCount >= 3){
@@ -98,16 +94,7 @@ public class StoreOwnerService {
         Store store = storeRepository.getStoreById(storeId)
                 .orElseThrow(() -> new BaseException(ErrorCode.STORE_NOT_FOUND, null));
 
-        User user = userRepository.findById(authUserId)
-                .orElseThrow(() -> new BaseException(USER_NOT_FOUND, null));
-
-        if(user.getUserRole() != UserRole.OWNER){
-            throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
-        }
-
-        if (!store.getUser().getId().equals(authUserId)) {
-            throw new BaseException(ErrorCode.UNAUTHORIZED_STORE_ACCESS, null);
-        }
+        validateOwner(authUserId, store);
 
         // DTO가 비어있는지 검증 (적어도 하나의 필드는 있어야 함)
         if (dto.getStoreName() == null && dto.getAddress() == null && dto.getPhone() == null &&
@@ -137,20 +124,13 @@ public class StoreOwnerService {
 
     @Transactional
     public void deleteStore(Long authUserId, Long storeId, StoreDeleteRequestDto dto) {
-
-        User user = userRepository.findById(authUserId)
-                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND, null));
-
-        if(user.getUserRole() != UserRole.OWNER){
-            throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
-        }
-
         Store store = storeRepository.getStoreById(storeId)
                 .orElseThrow(() -> new BaseException(ErrorCode.STORE_NOT_FOUND, null));
 
-        if (!store.getUser().getId().equals(authUserId)) {
-            throw new BaseException(ErrorCode.UNAUTHORIZED_STORE_ACCESS, null);
-        }
+        validateOwner(authUserId, store);
+
+        User user = userRepository.findById(authUserId)
+                .orElseThrow(() -> new BaseException(USER_NOT_FOUND, null));
 
         if(!passwordEncoder.matches(dto.getPassword(), user.getPassword())){
             throw new BaseException(PASSWORD_MISMATCH, null);
@@ -161,24 +141,10 @@ public class StoreOwnerService {
 
     @Transactional
     public String toggleStoreStatus(Long authUserId, Long storeId) {
-
-        User user = userRepository.findById(authUserId)
-                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND, null));
-
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new BaseException(ErrorCode.STORE_NOT_FOUND, null));
 
-        if (!store.getUser().getId().equals(authUserId)) {
-            throw new BaseException(ErrorCode.UNAUTHORIZED_STORE_ACCESS, null);
-        }
-
-        if(user.getUserRole() != UserRole.OWNER){
-            throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
-        }
-
-        if (!store.getUser().getId().equals(authUserId)) {
-            throw new BaseException(ErrorCode.UNAUTHORIZED_STORE_ACCESS, null);
-        }
+        validateOwner(authUserId, store);
 
         if (store.getDeleteAt() != null) {
             throw new BaseException(ErrorCode.CANNOT_MODIFY_DELETED_STORE, null);
@@ -204,5 +170,11 @@ public class StoreOwnerService {
         double newRating = Math.round((double) total / cnt * 10.0) / 10.0;
 
         store.updateRate(newRating);
+    }
+
+    private void validateOwner(Long authUserId, Store store) {
+        if(!store.getUser().getId().equals(authUserId)) {
+            throw new BaseException(ErrorCode.UNAUTHORIZED_STORE_ACCESS, null);
+        }
     }
 }

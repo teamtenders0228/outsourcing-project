@@ -25,6 +25,12 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(ownerAccessInterceptor)
-                .addPathPatterns("/owner/**");
+                .addPathPatterns(
+                        "/api/v1/menus/**",             // MenuController
+                        "/api/v1/owner/stores/**",      // StoreOwnerController
+                        "/api/v1/orders/accept/**",     // OrderController
+                        "/api/v1/orders/status/progress/**",
+                        "/api/v1/orders/status/reject/**"
+                );
     }
 }

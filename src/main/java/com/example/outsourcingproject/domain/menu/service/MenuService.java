@@ -10,7 +10,6 @@ import com.example.outsourcingproject.domain.menu.entity.Menu;
 import com.example.outsourcingproject.domain.menu.repository.MenuRepository;
 import com.example.outsourcingproject.domain.store.entity.Store;
 import com.example.outsourcingproject.domain.store.repository.StoreRepository;
-import com.example.outsourcingproject.domain.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
@@ -31,20 +30,12 @@ public class MenuService {
     // 메뉴 등록
     @Transactional
     public MenuResponseDto saveMenu(AuthUser authUser, MenuSaveRequestDto dto, Long storeId) {
-        // OWNER 검증
-        if(!authUser.getUserRole().equals(UserRole.OWNER)){
-            throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
-        }
-
         // Store 검증
         Store store = storeRepository.findById(storeId).orElseThrow(
                 () -> new BaseException(ErrorCode.STORE_NOT_FOUND, null)
         );
 
-        // userId 검증
-        if (!Objects.equals(authUser.getId(), store.getUser().getId())){
-            throw new BaseException(ErrorCode.USERID_NOT_MATCH, null);
-        }
+        validateOwner(authUser, store);
 
         Menu menu = new Menu(dto.getMenuName(), dto.getPrice(), store);
         menuRepository.save(menu);
@@ -60,11 +51,6 @@ public class MenuService {
     // 메뉴 전체 조회
     @Transactional(readOnly = true)
     public Page<MenuResponseDto> findAllMenu(AuthUser authUser, int page, int size, Long storeId) {
-        // OWNER 검증
-        if(!authUser.getUserRole().equals(UserRole.OWNER)){
-            throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
-        }
-
         // Store 검증
         Store store = storeRepository.findById(storeId).orElseThrow(
                 () -> new BaseException(ErrorCode.STORE_NOT_FOUND, null)
@@ -84,11 +70,6 @@ public class MenuService {
     // 메뉴 단건 조회
     @Transactional(readOnly = true)
     public MenuResponseDto findById(AuthUser authUser, Long menuId, Long storeId) {
-        // OWNER 검증
-        if(!authUser.getUserRole().equals(UserRole.OWNER)){
-            throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
-        }
-
         // Store 검증
         Store store = storeRepository.findById(storeId).orElseThrow(
                 () -> new BaseException(ErrorCode.STORE_NOT_FOUND, null)
@@ -109,20 +90,12 @@ public class MenuService {
     // 메뉴 수정
     @Transactional
     public MenuResponseDto updateMenu(AuthUser authUser, Long menuId, Long storeId, MenuUpdateRequestDto dto) {
-        // OWNER 검증
-        if(!authUser.getUserRole().equals(UserRole.OWNER)){
-            throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
-        }
-
         // Store 검증
         Store store = storeRepository.findById(storeId).orElseThrow(
                 () -> new BaseException(ErrorCode.STORE_NOT_FOUND, null)
         );
 
-        // userId 검증
-        if (!Objects.equals(authUser.getId(), store.getUser().getId())){
-            throw new BaseException(ErrorCode.USERID_NOT_MATCH, null);
-        }
+        validateOwner(authUser, store);
 
         // menu 검증
         Menu menu = menuRepository.findById(menuId).orElseThrow(
@@ -149,20 +122,12 @@ public class MenuService {
     // 메뉴 삭제
     @Transactional
     public void deleteMenu(AuthUser authUser, Long menuId, Long storeId) {
-        // OWNER 검증
-        if(!authUser.getUserRole().equals(UserRole.OWNER)){
-            throw new BaseException(ErrorCode.INVALID_USER_ROLE, null);
-        }
-
         // Store 검증
         Store store = storeRepository.findById(storeId).orElseThrow(
                 () -> new BaseException(ErrorCode.STORE_NOT_FOUND, null)
         );
 
-        // userId 검증
-        if (!Objects.equals(authUser.getId(), store.getUser().getId())){
-            throw new BaseException(ErrorCode.USERID_NOT_MATCH, null);
-        }
+        validateOwner(authUser, store);
 
         // menu 검증
         Menu menu = menuRepository.findById(menuId).orElseThrow(
@@ -170,5 +135,11 @@ public class MenuService {
         );
         log.info("메뉴 삭제 성공");
         menu.updateDeleteFlag();
+    }
+
+    private void validateOwner(AuthUser authUser, Store store){
+        if(!Objects.equals(authUser.getId(), store.getUser().getId())) {
+            throw new BaseException(ErrorCode.USERID_NOT_MATCH, null);
+        }
     }
 }

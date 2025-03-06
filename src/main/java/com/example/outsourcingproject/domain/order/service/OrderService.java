@@ -42,7 +42,7 @@ public class OrderService {
 
     // 주문 요청 - (일반 유저만 가능)
     @Trace
-    public OrderStatusResponseDto orderSave(Long userId, UserRole userRole, Long storeId, List<OrderSaveRequestDto> menus) {
+    public OrderStatusResponseDto saveOrder(Long userId, UserRole userRole, Long storeId, List<OrderSaveRequestDto> menus) {
         // 일반 유저인지 판별
         if(userRole != UserRole.USER) throw new BaseException(ErrorCode.ORDER_ONLY_FOR_REGULAR_USER, null);
 
@@ -90,7 +90,7 @@ public class OrderService {
     // 수락 - (가게사장님 만 가능)
     @Trace
     @Transactional
-    public OrderStatusResponseDto orderAccept(Long userId, Long orderId) {
+    public OrderStatusResponseDto acceptOrder(Long userId, Long orderId) {
         // 가게 사장인지 판별
         Order findOrder = orderRepository.findByIdOrElseThrow(orderId);
         List<Store> storeList = storeRepository.findByUser_Id(userId);
@@ -150,7 +150,7 @@ public class OrderService {
     // 주문 상태 변경 - (가게사장님 만 가능)(거절)
     @Trace
     @Transactional
-    public OrderStatusResponseDto statusChangeReject(Long userId, Long orderId) {
+    public OrderStatusResponseDto changeStatusToReject(Long userId, Long orderId) {
         // 가게 사장인지 판별
         Order findOrder = orderRepository.findByIdOrElseThrow(orderId);
         List<Store> storeList = storeRepository.findByUser_Id(userId);

@@ -1,4 +1,4 @@
-package com.example.outsourcingproject.domain.menu.dto.requestDto;
+package com.example.outsourcingproject.domain.menu.dto.request;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;

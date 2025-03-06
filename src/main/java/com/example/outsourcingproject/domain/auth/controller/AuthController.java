@@ -1,8 +1,8 @@
 package com.example.outsourcingproject.domain.auth.controller;
 
-import com.example.outsourcingproject.domain.auth.dto.SigninRequestDto;
-import com.example.outsourcingproject.domain.auth.dto.SigninResponseDto;
-import com.example.outsourcingproject.domain.auth.dto.SignupRequestDto;
+import com.example.outsourcingproject.domain.auth.dto.request.SigninRequestDto;
+import com.example.outsourcingproject.domain.auth.dto.response.SigninResponseDto;
+import com.example.outsourcingproject.domain.auth.dto.request.SignupRequestDto;
 import com.example.outsourcingproject.domain.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +26,4 @@ public class AuthController {
     public ResponseEntity<SigninResponseDto> signin(@Valid @RequestBody SigninRequestDto signinRequestDto) {
         return new ResponseEntity<>(authService.signin(signinRequestDto), HttpStatus.CREATED);
     }
-
-//    @DeleteMapping("/signout")
-//    public void signout(){
-//        return authService.signout();
-//    }
 }

@@ -2,9 +2,9 @@ package com.example.outsourcingproject.domain.menu.controller;
 
 import com.example.outsourcingproject.common.annotation.Auth;
 import com.example.outsourcingproject.common.dto.AuthUser;
-import com.example.outsourcingproject.domain.menu.dto.requestDto.MenuSaveRequestDto;
-import com.example.outsourcingproject.domain.menu.dto.requestDto.MenuUpdateRequestDto;
-import com.example.outsourcingproject.domain.menu.dto.responseDto.MenuResponseDto;
+import com.example.outsourcingproject.domain.menu.dto.request.MenuSaveRequestDto;
+import com.example.outsourcingproject.domain.menu.dto.request.MenuUpdateRequestDto;
+import com.example.outsourcingproject.domain.menu.dto.response.MenuResponseDto;
 import com.example.outsourcingproject.domain.menu.service.MenuService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

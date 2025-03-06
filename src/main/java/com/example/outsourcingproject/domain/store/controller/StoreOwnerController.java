@@ -2,7 +2,7 @@ package com.example.outsourcingproject.domain.store.controller;
 
 import com.example.outsourcingproject.common.annotation.Auth;
 import com.example.outsourcingproject.common.dto.AuthUser;
-import com.example.outsourcingproject.domain.store.dto.request.StoreCreateRequestDto;
+import com.example.outsourcingproject.domain.store.dto.request.StoreSaveRequestDto;
 import com.example.outsourcingproject.domain.store.dto.request.StoreDeleteRequestDto;
 import com.example.outsourcingproject.domain.store.dto.request.StoreUpdateRequestDto;
 import com.example.outsourcingproject.domain.store.dto.response.StoreResponseDto;
@@ -22,24 +22,27 @@ public class StoreOwnerController {
     private final StoreOwnerService storeOwnerService;
 
     @PostMapping
-    public ResponseEntity<String>createStore(
+    public ResponseEntity<StoreResponseDto> saveStore(
             @Auth AuthUser authUser,
-            @Valid @RequestBody StoreCreateRequestDto dto
+            @Valid @RequestBody StoreSaveRequestDto dto
     ){
-        storeOwnerService.createStore(authUser.getId(),dto);
-        return new ResponseEntity<>("가게 등록에 성공 했습니다.", HttpStatus.CREATED);
+        StoreResponseDto storeResponseDto = storeOwnerService.saveStore(authUser.getId(),dto);
+        return new ResponseEntity<>(storeResponseDto, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public List<StoreResponseDto> getAllStores(@Auth AuthUser authUser){
-      return storeOwnerService.getAllStores(authUser.getId());
+    public ResponseEntity<List<StoreResponseDto>> getAllStores(@Auth AuthUser authUser){
+        List<StoreResponseDto> storeResponseDtos = storeOwnerService.findAllStores(authUser.getId());
+      return new ResponseEntity<>(storeResponseDtos, HttpStatus.OK);
     }
 
     @GetMapping("/{storeId}")
-    public StoreResponseDto getStoreById(
+    public ResponseEntity<StoreResponseDto> getStoreById(
             @PathVariable Long storeId,
-            @Auth AuthUser authUser) {
-        return storeOwnerService.getStoreById(storeId, authUser.getId());
+            @Auth AuthUser authUser
+    ) {
+        StoreResponseDto storeResponseDto = storeOwnerService.findStoreById(storeId, authUser.getId());
+        return new ResponseEntity<>(storeResponseDto, HttpStatus.OK);
     }
 
     @PatchMapping("/{storeId}")

@@ -3,7 +3,6 @@ package com.example.outsourcingproject.domain.order.controller;
 import com.example.outsourcingproject.common.annotation.Auth;
 import com.example.outsourcingproject.common.dto.AuthUser;
 import com.example.outsourcingproject.domain.order.dto.request.OrderSaveRequestDto;
-import com.example.outsourcingproject.domain.order.dto.request.OrderStatusRequestDto;
 import com.example.outsourcingproject.domain.order.dto.response.*;
 import com.example.outsourcingproject.domain.order.service.OrderService;
 import jakarta.validation.Valid;
@@ -25,23 +24,23 @@ public class OrderController {
 
     // 주문 요청 - (일반 유저만 가능)
     @PostMapping("/{storeId}")
-    public ResponseEntity<OrderStatusResponseDto> orderSave(
+    public ResponseEntity<OrderStatusResponseDto> saveOrder(
             @Auth AuthUser authUser,
             @PathVariable Long storeId,
             @Valid @RequestBody List<OrderSaveRequestDto> requestDto
     ){
-        OrderStatusResponseDto responseDto = orderService.orderSave(authUser.getId(), authUser.getUserRole(), storeId, requestDto);
+        OrderStatusResponseDto responseDto = orderService.saveOrder(authUser.getId(), authUser.getUserRole(), storeId, requestDto);
 
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
     // 수락 - (가게사장님 만 가능)
     @PatchMapping("/accept/{orderId}")
-    public ResponseEntity<OrderStatusResponseDto> orderAccept(
+    public ResponseEntity<OrderStatusResponseDto> acceptOrder(
             @Auth AuthUser authUser,
             @PathVariable Long orderId
     ){
-        OrderStatusResponseDto responseDto = orderService.orderAccept(authUser.getId(), orderId);
+        OrderStatusResponseDto responseDto = orderService.acceptOrder(authUser.getId(), orderId);
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
@@ -59,18 +58,18 @@ public class OrderController {
 
     // 주문 상태 변경 - (가게사장님 만 가능)(거절)
     @PatchMapping("/status/reject/{orderId}")
-    public ResponseEntity<OrderStatusResponseDto> statusChangeReject(
+    public ResponseEntity<OrderStatusResponseDto> changeStatusToReject(
             @Auth AuthUser authUser,
             @PathVariable Long orderId
     ){
-        OrderStatusResponseDto responseDto = orderService.statusChangeReject(authUser.getId(), orderId);
+        OrderStatusResponseDto responseDto = orderService.changeStatusToReject(authUser.getId(), orderId);
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     // 사용자별 주문 내역 조회
     @GetMapping("/{userId}")
-    public ResponseEntity<List<UserOrdersResponseDto>> findOrdersByUser(@PathVariable Long userId){
+    public ResponseEntity<List<UserOrdersResponseDto>> getOrdersByUser(@PathVariable Long userId){
         List<UserOrdersResponseDto> responseDtoList = orderService.findOrdersByUser(userId);
 
         return new ResponseEntity<>(responseDtoList, HttpStatus.OK);

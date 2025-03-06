@@ -6,7 +6,7 @@ import lombok.Getter;
 
 import java.time.LocalTime;
 @Getter
-public class StoreCreateRequestDto {
+public class StoreSaveRequestDto {
     @NotBlank(message = "가게 이름은 필수 입력 값입니다.")
     private String storeName;
     @NotBlank(message = "주소는 필수 입력 값입니다.")

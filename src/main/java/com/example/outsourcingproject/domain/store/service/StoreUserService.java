@@ -16,16 +16,18 @@ import java.util.stream.Collectors;
 public class StoreUserService {
 
     private final StoreRepository storeRepository;
-    public List<StoreResponseDto> getAllStores() {
+    public List<StoreResponseDto> findAllStores() {
         List<Store> stores = storeRepository.findAllOpenStores();
         return stores.stream()
                 .map(StoreResponseDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
-    public StoreResponseDto getStoreById(Long storeId) {
+    public StoreResponseDto findStoreById(Long storeId) {
         Store store = storeRepository.getOpenStoreById(storeId)
                 .orElseThrow(() -> new BaseException(ErrorCode.STORE_NOT_FOUND, null));
+
+        // 메뉴 출력 위치
 
         return StoreResponseDto.fromEntity(store);
     }

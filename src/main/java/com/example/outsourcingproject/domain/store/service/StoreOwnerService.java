@@ -7,7 +7,7 @@ import com.example.outsourcingproject.domain.menu.entity.Menu;
 import com.example.outsourcingproject.domain.menu.repository.MenuRepository;
 import com.example.outsourcingproject.domain.review.entity.Review;
 import com.example.outsourcingproject.domain.review.repository.ReviewRepository;
-import com.example.outsourcingproject.domain.store.dto.request.StoreCreateRequestDto;
+import com.example.outsourcingproject.domain.store.dto.request.StoreSaveRequestDto;
 import com.example.outsourcingproject.domain.store.dto.request.StoreDeleteRequestDto;
 import com.example.outsourcingproject.domain.store.dto.request.StoreUpdateRequestDto;
 import com.example.outsourcingproject.domain.store.dto.response.StoreResponseDto;
@@ -17,12 +17,10 @@ import com.example.outsourcingproject.domain.store.repository.StoreRepository;
 import com.example.outsourcingproject.domain.user.entity.User;
 import com.example.outsourcingproject.domain.user.entity.UserRole;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,7 +37,7 @@ public class StoreOwnerService {
     private final ReviewRepository reviewRepository;
 
     @Transactional
-    public StoreResponseDto createStore(Long authUserId, StoreCreateRequestDto dto) {
+    public StoreResponseDto saveStore(Long authUserId, StoreSaveRequestDto dto) {
         // 유저 검증
         User user = userRepository.findById(authUserId).orElseThrow(() -> new BaseException(USER_NOT_FOUND, null));
         // 유저 등급 검증
@@ -75,7 +73,7 @@ public class StoreOwnerService {
     }
 
     @Transactional(readOnly = true)
-    public List<StoreResponseDto> getAllStores(Long authUserId) {
+    public List<StoreResponseDto> findAllStores(Long authUserId) {
         // closedFlag가 true인 경우만 조회
         List<Store> stores = storeRepository.findAllByUserId(authUserId);
         return stores.stream()
@@ -84,7 +82,7 @@ public class StoreOwnerService {
     }
 
     @Transactional(readOnly = true)
-    public StoreResponseDto getStoreById(Long storeId, Long authUserId) {
+    public StoreResponseDto findStoreById(Long storeId, Long authUserId) {
 //        userRepository.findById(authUserId)
 //                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND, null));
 

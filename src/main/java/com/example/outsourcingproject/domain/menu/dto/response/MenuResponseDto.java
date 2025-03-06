@@ -1,9 +1,8 @@
-package com.example.outsourcingproject.domain.menu.dto.responseDto;
+package com.example.outsourcingproject.domain.menu.dto.response;
+
 
 import com.example.outsourcingproject.domain.menu.entity.Menu;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 public class MenuResponseDto {
@@ -32,6 +31,4 @@ public class MenuResponseDto {
                 menu.priceToString()
         );
     }
-
-
 }

@@ -1,7 +1,5 @@
 package com.example.outsourcingproject.domain.store.controller;
 
-import com.example.outsourcingproject.common.annotation.Auth;
-import com.example.outsourcingproject.common.dto.AuthUser;
 import com.example.outsourcingproject.domain.store.dto.response.StoreResponseDto;
 import com.example.outsourcingproject.domain.store.service.StoreUserService;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +18,11 @@ public class StoreUserController {
 
     @GetMapping
     public List<StoreResponseDto> getAllStores(){
-        return storeUserService.getAllStores();
+        return storeUserService.findAllStores();
     }
 
     @GetMapping("/{storeId}")
-    public StoreResponseDto getStoreById(
-            @PathVariable Long storeId) {
-        return storeUserService.getStoreById(storeId);
+    public StoreResponseDto getStoreById(@PathVariable Long storeId) {
+        return storeUserService.findStoreById(storeId);
     }
 }

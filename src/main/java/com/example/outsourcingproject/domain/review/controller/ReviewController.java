@@ -32,7 +32,8 @@ public class ReviewController {
     public ResponseEntity<String> saveReview(
             @Auth AuthUser authUser,
             @PathVariable Long orderId,
-            @Valid @RequestBody ReviewSaveRequestDto dto){
+            @Valid @RequestBody ReviewSaveRequestDto dto
+    ){
         reviewService.saveReview(authUser, orderId, dto);
 
         return new ResponseEntity<>("message : 리뷰 등록이 완료되었습니다.",HttpStatus.OK);
@@ -41,9 +42,11 @@ public class ReviewController {
     // 리뷰 조회
     // 1. store 조회
     @GetMapping("/stores/{storeId}")
-    public ResponseEntity<Page<ReviewResponseDto>> getReviewsByStore(@PathVariable Long storeId,
-                                                                     @RequestParam(defaultValue = "1") int page,
-                                                                     @RequestParam(defaultValue = "10")int size){
+    public ResponseEntity<Page<ReviewResponseDto>> getReviewsByStore(
+            @PathVariable Long storeId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10")int size
+    ){
 
         return ResponseEntity.ok(reviewService.findReviewsByStoreId(storeId, page, size));
     }
@@ -51,9 +54,11 @@ public class ReviewController {
 
     // 2. user(사용자) 조회
     @GetMapping("/myreviews")
-    public ResponseEntity<Page<ReviewResponseDto>> getReviewsByUser(@Auth AuthUser authUser,
-                                                                    @RequestParam(defaultValue = "1") int page,
-                                                                    @RequestParam(defaultValue = "10")int size) {
+    public ResponseEntity<Page<ReviewResponseDto>> getReviewsByUser(
+            @Auth AuthUser authUser,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10")int size
+    ) {
         return ResponseEntity.ok(reviewService.findReviewsByUserId(authUser, page, size));
     }
 

@@ -1,4 +1,4 @@
-package com.example.outsourcingproject.domain.user.dto;
+package com.example.outsourcingproject.domain.user.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

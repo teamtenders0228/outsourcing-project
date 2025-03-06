@@ -1,9 +1,6 @@
-package com.example.outsourcingproject.domain.auth.dto;
+package com.example.outsourcingproject.domain.auth.dto.response;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 public class SigninResponseDto {

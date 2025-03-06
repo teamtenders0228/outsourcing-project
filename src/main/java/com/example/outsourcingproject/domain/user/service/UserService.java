@@ -2,9 +2,9 @@ package com.example.outsourcingproject.domain.user.service;
 
 import com.example.outsourcingproject.common.encoder.PasswordEncoder;
 import com.example.outsourcingproject.common.exception.BaseException;
-import com.example.outsourcingproject.domain.user.dto.ChangePasswordRequestDto;
-import com.example.outsourcingproject.domain.user.dto.ChangeProfileRequestDto;
-import com.example.outsourcingproject.domain.user.dto.UserResponseDto;
+import com.example.outsourcingproject.domain.user.dto.request.ChangePasswordRequestDto;
+import com.example.outsourcingproject.domain.user.dto.request.ChangeProfileRequestDto;
+import com.example.outsourcingproject.domain.user.dto.response.UserResponseDto;
 import com.example.outsourcingproject.domain.user.entity.User;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserResponseDto getUser(Long id) {
+    public UserResponseDto findUser(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new BaseException(USER_NOT_FOUND, null));
         return new UserResponseDto(user.getName(), user.getEmail(), user.getPhone(), user.getAddress());
     }

@@ -3,9 +3,9 @@ package com.example.outsourcingproject.domain.auth.service;
 import com.example.outsourcingproject.common.encoder.PasswordEncoder;
 import com.example.outsourcingproject.common.exception.BaseException;
 import com.example.outsourcingproject.config.JwtUtil;
-import com.example.outsourcingproject.domain.auth.dto.SigninRequestDto;
-import com.example.outsourcingproject.domain.auth.dto.SigninResponseDto;
-import com.example.outsourcingproject.domain.auth.dto.SignupRequestDto;
+import com.example.outsourcingproject.domain.auth.dto.request.SigninRequestDto;
+import com.example.outsourcingproject.domain.auth.dto.response.SigninResponseDto;
+import com.example.outsourcingproject.domain.auth.dto.request.SignupRequestDto;
 import com.example.outsourcingproject.domain.user.entity.User;
 import com.example.outsourcingproject.domain.user.entity.UserRole;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
@@ -13,8 +13,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 import static com.example.outsourcingproject.common.exception.ErrorCode.*;
 

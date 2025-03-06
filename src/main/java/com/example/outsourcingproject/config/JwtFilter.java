@@ -1,16 +1,10 @@
 package com.example.outsourcingproject.config;
 
-import com.example.outsourcingproject.domain.user.entity.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import com.example.outsourcingproject.common.exception.BaseException;
-import com.example.outsourcingproject.domain.auth.dto.SigninResponseDto;
-import com.example.outsourcingproject.domain.user.entity.UserRole;
+import com.example.outsourcingproject.domain.auth.dto.response.SigninResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,12 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Set;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
-
-import java.io.IOException;
 
 @Slf4j
 @Component

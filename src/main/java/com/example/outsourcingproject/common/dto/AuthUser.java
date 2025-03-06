@@ -1,6 +1,6 @@
 package com.example.outsourcingproject.common.dto;
 
-import com.example.outsourcingproject.domain.user.entity.UserRole;
+import com.example.outsourcingproject.domain.user.enums.UserRole;
 import lombok.Getter;
 
 @Getter

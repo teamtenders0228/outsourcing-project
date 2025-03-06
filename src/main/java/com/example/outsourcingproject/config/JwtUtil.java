@@ -1,6 +1,6 @@
 package com.example.outsourcingproject.config;
 
-import com.example.outsourcingproject.domain.user.entity.UserRole;
+import com.example.outsourcingproject.domain.user.enums.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

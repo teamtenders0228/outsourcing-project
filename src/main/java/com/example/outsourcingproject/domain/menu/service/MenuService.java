@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MenuService {
@@ -110,7 +109,6 @@ public class MenuService {
             menu.updatePrice(dto.getPrice());
         }
 
-        log.info("메뉴 수정 성공");
         return new MenuResponseDto(
                 menu.getId(),
                 store.getId(),
@@ -133,7 +131,6 @@ public class MenuService {
         Menu menu = menuRepository.findById(menuId).orElseThrow(
                 () -> new BaseException(ErrorCode.NOT_FOUND_MENU, null)
         );
-        log.info("메뉴 삭제 성공");
         menu.updateDeleteFlag();
     }
 

@@ -1,6 +1,6 @@
 package com.example.outsourcingproject.config.interceptor;
 
-import com.example.outsourcingproject.domain.user.entity.UserRole;
+import com.example.outsourcingproject.domain.user.enums.UserRole;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;

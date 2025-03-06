@@ -1,6 +1,5 @@
 package com.example.outsourcingproject.domain.review.service;
 
-import com.example.outsourcingproject.common.annotation.Auth;
 import com.example.outsourcingproject.common.dto.AuthUser;
 import com.example.outsourcingproject.common.exception.BaseException;
 import com.example.outsourcingproject.common.exception.ErrorCode;
@@ -11,22 +10,13 @@ import com.example.outsourcingproject.domain.review.dto.request.ReviewUpdateRequ
 import com.example.outsourcingproject.domain.review.dto.response.ReviewResponseDto;
 import com.example.outsourcingproject.domain.review.entity.Review;
 import com.example.outsourcingproject.domain.review.repository.ReviewRepository;
-import com.example.outsourcingproject.domain.store.entity.Store;
-import com.example.outsourcingproject.domain.store.repository.StoreRepository;
 import com.example.outsourcingproject.domain.store.service.StoreOwnerService;
-import com.example.outsourcingproject.domain.user.entity.UserRole;
-import com.example.outsourcingproject.domain.user.repository.UserRepository;
+import com.example.outsourcingproject.domain.user.enums.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.util.List;
 
 @Slf4j
 @Service

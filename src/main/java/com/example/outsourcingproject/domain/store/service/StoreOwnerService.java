@@ -15,7 +15,6 @@ import com.example.outsourcingproject.domain.store.entity.Store;
 import com.example.outsourcingproject.domain.store.enums.StoreCategory;
 import com.example.outsourcingproject.domain.store.repository.StoreRepository;
 import com.example.outsourcingproject.domain.user.entity.User;
-import com.example.outsourcingproject.domain.user.entity.UserRole;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -44,6 +44,7 @@ public class Store extends BaseEntity {
     @Column(nullable = false)
     private LocalTime closeTime;
 
+    @Builder.Default
     @Column(nullable = false)
     private Double rating = 0.0;
 

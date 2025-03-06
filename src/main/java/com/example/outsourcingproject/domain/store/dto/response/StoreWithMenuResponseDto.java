@@ -31,7 +31,7 @@ public class StoreWithMenuResponseDto {
         this.storeName = store.getStoreName();
         this.userName = store.getUser().getName();
         this.address = store.getAddress();
-        this.phone = store.getAddress();
+        this.phone = store.getPhone();
         this.category = store.getCategory().name();
         this.minPrice = store.getMinPrice();
         this.openTime = store.getOpenTime();

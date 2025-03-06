@@ -6,6 +6,7 @@ import com.example.outsourcingproject.domain.store.dto.request.StoreSaveRequestD
 import com.example.outsourcingproject.domain.store.dto.request.StoreDeleteRequestDto;
 import com.example.outsourcingproject.domain.store.dto.request.StoreUpdateRequestDto;
 import com.example.outsourcingproject.domain.store.dto.response.StoreResponseDto;
+import com.example.outsourcingproject.domain.store.dto.response.StoreWithMenuResponseDto;
 import com.example.outsourcingproject.domain.store.service.StoreOwnerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,11 +38,11 @@ public class StoreOwnerController {
     }
 
     @GetMapping("/{storeId}")
-    public ResponseEntity<StoreResponseDto> getStoreById(
+    public ResponseEntity<StoreWithMenuResponseDto> getStoreById(
             @PathVariable Long storeId,
             @Auth AuthUser authUser
     ) {
-        StoreResponseDto storeResponseDto = storeOwnerService.findStoreById(storeId, authUser.getId());
+        StoreWithMenuResponseDto storeResponseDto = storeOwnerService.findStoreById(storeId, authUser.getId());
         return new ResponseEntity<>(storeResponseDto, HttpStatus.OK);
     }
 

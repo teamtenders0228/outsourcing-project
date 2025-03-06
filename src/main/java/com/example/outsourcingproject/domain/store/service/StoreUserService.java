@@ -2,7 +2,10 @@ package com.example.outsourcingproject.domain.store.service;
 
 import com.example.outsourcingproject.common.exception.BaseException;
 import com.example.outsourcingproject.common.exception.ErrorCode;
+import com.example.outsourcingproject.domain.menu.entity.Menu;
+import com.example.outsourcingproject.domain.menu.repository.MenuRepository;
 import com.example.outsourcingproject.domain.store.dto.response.StoreResponseDto;
+import com.example.outsourcingproject.domain.store.dto.response.StoreWithMenuResponseDto;
 import com.example.outsourcingproject.domain.store.entity.Store;
 import com.example.outsourcingproject.domain.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +17,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class StoreUserService {
-
     private final StoreRepository storeRepository;
+    private final MenuRepository menuRepository;
     public List<StoreResponseDto> findAllStores() {
         List<Store> stores = storeRepository.findAllOpenStores();
         return stores.stream()
@@ -23,12 +26,12 @@ public class StoreUserService {
                 .collect(Collectors.toList());
     }
 
-    public StoreResponseDto findStoreById(Long storeId) {
+    public StoreWithMenuResponseDto findStoreById(Long storeId) {
         Store store = storeRepository.getOpenStoreById(storeId)
                 .orElseThrow(() -> new BaseException(ErrorCode.STORE_NOT_FOUND, null));
 
-        // 메뉴 출력 위치
+        List<Menu> menus = menuRepository.findAllByStoreId(storeId);
 
-        return StoreResponseDto.fromEntity(store);
+        return new StoreWithMenuResponseDto(store, menus);
     }
 }

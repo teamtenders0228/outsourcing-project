@@ -11,6 +11,7 @@ import com.example.outsourcingproject.domain.store.dto.request.StoreSaveRequestD
 import com.example.outsourcingproject.domain.store.dto.request.StoreDeleteRequestDto;
 import com.example.outsourcingproject.domain.store.dto.request.StoreUpdateRequestDto;
 import com.example.outsourcingproject.domain.store.dto.response.StoreResponseDto;
+import com.example.outsourcingproject.domain.store.dto.response.StoreWithMenuResponseDto;
 import com.example.outsourcingproject.domain.store.entity.Store;
 import com.example.outsourcingproject.domain.store.enums.StoreCategory;
 import com.example.outsourcingproject.domain.store.repository.StoreRepository;
@@ -77,14 +78,14 @@ public class StoreOwnerService {
     }
 
     @Transactional(readOnly = true)
-    public StoreResponseDto findStoreById(Long storeId, Long authUserId) {
+    public StoreWithMenuResponseDto findStoreById(Long storeId, Long authUserId) {
 //        userRepository.findById(authUserId)
 //                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND, null));
 
         Store store = storeRepository.findByIdAndUserId(storeId, authUserId)
                 .orElseThrow(() -> new BaseException(ErrorCode.STORE_NOT_FOUND, null));
         List<Menu> menus = menuRepository.findAllByStoreId(storeId);
-        return StoreResponseDto.fromEntity(store);
+        return new StoreWithMenuResponseDto(store, menus);
     }
 
 

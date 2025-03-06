@@ -1,6 +1,7 @@
 package com.example.outsourcingproject.domain.store.controller;
 
 import com.example.outsourcingproject.domain.store.dto.response.StoreResponseDto;
+import com.example.outsourcingproject.domain.store.dto.response.StoreWithMenuResponseDto;
 import com.example.outsourcingproject.domain.store.service.StoreUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +23,7 @@ public class StoreUserController {
     }
 
     @GetMapping("/{storeId}")
-    public StoreResponseDto getStoreById(@PathVariable Long storeId) {
+    public StoreWithMenuResponseDto getStoreById(@PathVariable Long storeId) {
         return storeUserService.findStoreById(storeId);
     }
 }

@@ -4,6 +4,7 @@ import com.example.outsourcingproject.common.dto.AuthUser;
 import com.example.outsourcingproject.common.exception.BaseException;
 import com.example.outsourcingproject.common.exception.ErrorCode;
 import com.example.outsourcingproject.domain.order.entity.Order;
+import com.example.outsourcingproject.domain.order.enums.Status;
 import com.example.outsourcingproject.domain.order.repository.OrderRepository;
 import com.example.outsourcingproject.domain.review.dto.request.ReviewSaveRequestDto;
 import com.example.outsourcingproject.domain.review.dto.request.ReviewUpdateRequestDto;
@@ -41,6 +42,10 @@ public class ReviewService {
         }
 
         Order order = orderRepository.findByIdOrElseThrow(orderId);
+
+        if(!order.getStatus().equals(Status.COMPLETE)) {
+            throw new BaseException(ErrorCode.EARLY_REVIEW, null);
+        }
 
         Review review = new Review(order, dto.getComments(), dto.getRate());
         reviewRepository.save(review);

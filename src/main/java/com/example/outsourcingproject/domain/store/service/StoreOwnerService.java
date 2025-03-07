@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,6 +82,14 @@ public class StoreOwnerService {
     public StoreWithMenuResponseDto findStoreById(Long storeId, Long authUserId) {
 //        userRepository.findById(authUserId)
 //                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND, null));
+        List<Store> storeList = storeRepository.findByUser_Id(authUserId);
+        List<Long> storeIdList = new ArrayList<>();
+
+        for(Store store : storeList){
+            storeIdList.add(store.getId());
+        }
+
+        if(!storeIdList.contains(storeId)) throw new BaseException(ErrorCode.UNAUTHORIZED_STORE_ACCESS, null);
 
         Store store = storeRepository.findByIdAndUserId(storeId, authUserId)
                 .orElseThrow(() -> new BaseException(ErrorCode.STORE_NOT_FOUND, null));

@@ -4,6 +4,7 @@ import com.example.outsourcingproject.common.entity.BaseEntity;
 import com.example.outsourcingproject.domain.order.entity.Order;
 import com.example.outsourcingproject.domain.menu.entity.Menu;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "order_items")
 @NoArgsConstructor
+@AllArgsConstructor
 public class OrderItem extends BaseEntity {
 
     @Id

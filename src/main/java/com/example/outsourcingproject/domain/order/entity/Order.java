@@ -5,6 +5,7 @@ import com.example.outsourcingproject.domain.user.entity.User;
 import com.example.outsourcingproject.domain.order.enums.Status;
 import com.example.outsourcingproject.domain.store.entity.Store;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "orders")
 @NoArgsConstructor
+@AllArgsConstructor
 public class Order extends BaseEntity {
 
     @Id

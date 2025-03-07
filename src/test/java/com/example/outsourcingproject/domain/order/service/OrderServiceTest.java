@@ -82,7 +82,7 @@ class OrderServiceTest {
         assertThrows(BaseException.class, () -> orderService.saveOrder(1L, UserRole.OWNER, 1L, menus));
     }
 
-    @ParameterizedTest
+    @Test
     public void 가게의_메뉴가_아니라서_에러가_난다(){
         // given
         Long userId = 1L;

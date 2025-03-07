@@ -42,6 +42,7 @@ public enum ErrorCode {
     REVIEW_NOT_FOUND("리뷰를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     UNAUTHORIZED_REVIEW_ACCESS("리뷰 작성자만 수정 가능합니다", HttpStatus.UNAUTHORIZED),
     DUPLICATE_REVIEW("이미 해당 주문에 대한 리뷰가 작성했습니다.", HttpStatus.BAD_REQUEST),
+    EARLY_REVIEW("주문이 완료되기 전까지는 리뷰를 달 수 없습니다.", HttpStatus.BAD_REQUEST),
     //그 외 에러 코드
     INVALID_TYPE("유효하지 않은 타입입니다.",HttpStatus.BAD_REQUEST),
     SERVER_NOT_WORK("서버 문제로 인해 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);

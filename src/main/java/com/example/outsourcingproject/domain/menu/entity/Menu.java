@@ -3,6 +3,7 @@ package com.example.outsourcingproject.domain.menu.entity;
 import com.example.outsourcingproject.common.entity.BaseEntity;
 import com.example.outsourcingproject.domain.store.entity.Store;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -11,6 +12,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Entity
 @Table(name = "menus")
 @NoArgsConstructor
+@AllArgsConstructor
 public class Menu extends BaseEntity {
 
     @Id

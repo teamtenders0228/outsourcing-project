@@ -49,6 +49,6 @@ public class UserController {
             @Valid @RequestBody UserDeleteRequestDto requestDto
     ) {
         userService.deleteUser(authUser.getId(), requestDto.getPassword());
-        return new ResponseEntity<>("성공적으로 탈퇴되었습니다.", HttpStatus.OK);
+        return new ResponseEntity<>("성공적으로 탈퇴되었습니다.", HttpStatus.NO_CONTENT);
     }
 }

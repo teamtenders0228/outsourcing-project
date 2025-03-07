@@ -38,7 +38,6 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     @EntityGraph(attributePaths = "user")
     Optional<Store> getStoreById(Long storeId);
 
-
     // 일반 유저용 매장 조회
     @Query("SELECT s FROM Store s WHERE s.closedFlag = true AND s.deleteAt IS NULL")
     @EntityGraph(attributePaths = "user")

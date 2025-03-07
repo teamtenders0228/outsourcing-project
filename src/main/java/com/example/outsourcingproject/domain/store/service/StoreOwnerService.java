@@ -70,7 +70,6 @@ public class StoreOwnerService {
 
     @Transactional(readOnly = true)
     public List<StoreResponseDto> findAllStores(Long authUserId) {
-        // closedFlag가 true인 경우만 조회
         List<Store> stores = storeRepository.findAllByUserId(authUserId);
         return stores.stream()
                 .map(StoreResponseDto::fromEntity)
@@ -79,9 +78,6 @@ public class StoreOwnerService {
 
     @Transactional(readOnly = true)
     public StoreWithMenuResponseDto findStoreById(Long storeId, Long authUserId) {
-//        userRepository.findById(authUserId)
-//                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND, null));
-
         Store store = storeRepository.findByIdAndUserId(storeId, authUserId)
                 .orElseThrow(() -> new BaseException(ErrorCode.STORE_NOT_FOUND, null));
         List<Menu> menus = menuRepository.findAllByStoreId(storeId);
@@ -95,13 +91,6 @@ public class StoreOwnerService {
                 .orElseThrow(() -> new BaseException(ErrorCode.STORE_NOT_FOUND, null));
 
         validateOwner(authUserId, store);
-
-        // DTO가 비어있는지 검증 (적어도 하나의 필드는 있어야 함)
-        if (dto.getStoreName() == null && dto.getAddress() == null && dto.getPhone() == null &&
-                dto.getCategory() == null && dto.getMinPrice() == null &&
-                dto.getOpenTime() == null && dto.getCloseTime() == null) {
-            throw new BaseException(ErrorCode.INVALID_FORM, "변경할 데이터가 없습니다.");
-        }
 
         // 가게 이름 중복 검증 (storeName이 변경될 경우만)
         if (dto.getStoreName() != null && storeRepository.existsByStoreName(dto.getStoreName())) {
@@ -141,7 +130,7 @@ public class StoreOwnerService {
 
     @Transactional
     public String toggleStoreStatus(Long authUserId, Long storeId) {
-        Store store = storeRepository.findById(storeId)
+        Store store = storeRepository.getStoreById(storeId)
                 .orElseThrow(() -> new BaseException(ErrorCode.STORE_NOT_FOUND, null));
 
         validateOwner(authUserId, store);
@@ -156,7 +145,7 @@ public class StoreOwnerService {
 
     @Transactional
     public void updateRating(Long storeId) {
-        Store store = storeRepository.findById(storeId)
+        Store store = storeRepository.getStoreById(storeId)
                 .orElseThrow(() -> new BaseException(ErrorCode.STORE_NOT_FOUND, null));
 
         List<Review> reviews = reviewRepository.findByStoreId(storeId);
